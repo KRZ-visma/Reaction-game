@@ -1,0 +1,20 @@
+---
+description: Capability slices; optimize for easy refactoring
+alwaysApply: true
+---
+
+# Architecture
+
+**Goed** = feature verplaatsen/herschrijven/verwijderen zonder kettingreactie.
+
+1. Top-level op capability, niet `components/`/`services/`/`utils/`.
+2. Screaming names + vertical slices (ui + model + data? + tests); één slice tegelijk.
+3. SOLID voor grenzen; geen ceremonie die refactoren duurder maakt.
+4. Dun `shared/`. Cross-feature alleen via `index.ts` (liever geen koppeling).
+5. `model/` zo puur mogelijk. `main.ts` = composition root.
+
+```text
+src/{main.ts,app/,features/<feature>/{ui,model,data?,index.ts,*.test.ts},shared/,styles/}
+```
+
+**Smells:** god-modules, shared managers, premature frameworks, lagen-dumps.

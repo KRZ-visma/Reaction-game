@@ -1,0 +1,13 @@
+---
+description: Vitest required; run locally; CI gate before deploy
+alwaysApply: true
+---
+
+# Testing
+
+- Vitest; `src/**/*.{test,spec}.ts`; `npm test` non-watch.
+- Unit voor domeinlogica; DOM alleen als nodig; E2E alleen met spec.
+- Elke behavior change → tests bijwerken.
+- Done pas na **lokaal** groen `npm test`. Rood fixen vóór commit/PR.
+- Scaffold: ≥1 smoke test + CI vanaf dag één.
+- CI: `npm test` vóór build/deploy. Tests uitzetten/wissen om groen te scoren: verboden.

@@ -1,0 +1,14 @@
+---
+description: Scaffold allowed; no invented product scope
+alwaysApply: true
+---
+
+# Scaffold & scope
+
+Productwaarheid: `docs/app-spec.md`. Ontbreekt → niet bouwen. Nieuwe features: eerst spec.
+
+**Zonder volle spec mag:** Vite+TS (`features/`/`app/`/`shared/`), Vitest+smoke, PWA+`app-update`-slice, Pages-workflow, minimale shell, README.
+
+**Zonder spec mag niet:** spelregels, scores, accounts, leaderboards, marketing, analytics, SDKs.
+
+**Volgorde:** tooling+base+Vitest+skeleton → PWA/update-slice+tests → deploy met test-gate → spec-features één slice tegelijk.

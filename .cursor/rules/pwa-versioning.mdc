@@ -1,0 +1,15 @@
+---
+description: PWA version identity and prompted client updates
+alwaysApply: true
+---
+
+# PWA versioning & updates
+
+Geïnstalleerde clients moeten na deploy de nieuwe build kunnen toepassen zonder sitegegevens te wissen.
+
+- Unieke build-versie (`package.json` + SHA of timestamp), zichtbaar in UI.
+- `vite-plugin-pwa`, precache hashed assets; default `registerType: 'prompt'` (geen stille `autoUpdate` tenzij gevraagd).
+- **Vernieuwen** → skip waiting → reload. Foreground (`visibilitychange`) → `registration.update()`.
+- SW-scope = Vite `base` (`/Reaction-game/`).
+- UX: “Nieuwe versie beschikbaar” / “Er is een update. Tik op Vernieuwen om te laden.” / **Vernieuwen** · Later.
+- Check: A installeren → B deployen → foreground → prompt → reload op B; offline shell blijft.
