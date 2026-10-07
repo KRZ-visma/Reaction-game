@@ -1,91 +1,75 @@
-# App-specificatie — Reaction-game
+# App-spec — Reaction-game
 
-> Vul dit document in voordat (of terwijl) features worden gebouwd.
-> Coding agents behandelen dit als product-bron van waarheid naast `AGENTS.md`.
+Productwaarheid naast `AGENTS.md`. Leeg = geen feature-implementatie.
 
 ## Status
 
-- [ ] Concept vastgelegd
-- [ ] Schermen beschreven
-- [ ] Acceptatiecriteria per feature
-- [ ] Offline-gedrag per feature
-- [ ] Klaar om te implementeren
+- [ ] Concept
+- [ ] Schermen
+- [ ] Acceptatiecriteria
+- [ ] Offline per feature
+- [ ] Klaar om te bouwen
 
-## Samenvatting (1 alinea)
+## Samenvatting
 
-_Wat is de app? Voor wie? Wat is de kernactie in één zin?_
+_Wat / voor wie / kernactie in één zin._
 
-## Doelgroep & apparaten
+## Doelgroep
 
-- Primair: _bijv. mobiel (Android/iOS) als geïnstalleerde PWA_
-- Secondair: _desktop browser_
-- Oriëntatie: _portrait / landscape / beide_
-- Toegankelijkheid: _minimale eisen (contrast, touch targets, …)_
+- Primair: _
+- Secondair: _
+- Oriëntatie: _
+- A11y-minimum: _
 
 ## Niet-doelen
 
-_Lijst wat bewust buiten scope is (accounts, multiplayer, native stores, …)._
+_
 
-## Functionele features
+## Features
 
-Kopieer dit blok per feature:
+Herhaal per feature:
 
 ### Feature: _naam_
 
-- **Beschrijving:**
-- **User story:** Als … wil ik … zodat …
-- **UI / schermen:**
-- **Interactie:** taps, gestures, keyboard, …
-- **Data:** wat wordt opgeslagen (localStorage / IndexedDB / niets)
-- **Offline:** werkt volledig / gedeeltelijk / niet nodig
-- **Acceptatiecriteria:**
-  - [ ]
+- Beschrijving:
+- User story:
+- UI:
+- Interactie:
+- Data (localStorage / IDB / geen):
+- Offline:
+- Acceptatiecriteria:
   - [ ]
 
-## Schermen & navigatie
+## Schermen
 
-| Scherm | Pad / route | Doel | Navigatie naartoe |
+| Scherm | Route | Doel | Naartoe vanaf |
 | --- | --- | --- | --- |
 | | | | |
 
-## Game- of domeinregels
+## Domeinregels
 
-_Score, timing, levels, foutafhandeling, reset, …_
+_
 
-## Content & assets
+## Content / assets
 
-_Icons, geluid, haptics, copy-tonality (NL), …_
+_
 
-## Modules / vertical slices (voor agents)
+## Slices
 
-Noem per capability de voorziene slice-naam onder `src/features/` (functioneel,
-niet technisch). Voorbeeld: `play-round`, `results`, `settings`. Agents houden
-slices gescheiden (screaming architecture + SOLID) zodat refactoren makkelijk
-blijft — zie `AGENTS.md` en `.cursor/rules/architecture.mdc`.
-
-| Capability | Slice-map | Opmerkingen |
+| Capability | `src/features/…` | Notes |
 | --- | --- | --- |
 | | | |
 
-## Testbaarheid (voor agents)
+## Te testen
 
-Per feature in de lijst hierboven: noem wat geautomatiseerd getest moet worden
-(bijv. scoreberekening, timingvensters, reset). Agents schrijven Vitest-tests
-daarvoor en voeren `npm test` uit vóór afronden — zie `AGENTS.md` / DoD.
+Per feature: wat Vitest moet dekken.
 
-## Versie & update (productkeuzes)
+## Update (afwijkingen t.o.v. standaard)
 
-Standaard uit agent-instructies (niet wijzigen tenzij nodig):
+Standaard: NL-prompt **Vernieuwen**, versie zichtbaar, check op foreground.  
+Afwijkingen: _geen / …_
 
-- Updateprompt in het Nederlands met knop **Vernieuwen**
-- Versie zichtbaar voor support
-- Check opnieuw bij terugkeer naar de app (foreground)
-
-Afwijkingen t.o.v. standaard:
-
-- _geen / beschrijf hier_
-
-## Open vragen
+## Open
 
 1.
 2.

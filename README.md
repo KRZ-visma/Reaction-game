@@ -1,32 +1,15 @@
 # Reaction-game
 
-Progressive web app (TypeScript), gehost op GitHub Pages, met automatische
-client-updates via een service worker.
+TypeScript PWA op GitHub Pages, met automatische client-updates.
 
-## Status
+**Fase:** agent-instructies. App volgt na ingevulde [`docs/app-spec.md`](docs/app-spec.md).
 
-**Fase: agent-instructies.** De app zelf wordt gebouwd zodra
-[`docs/app-spec.md`](docs/app-spec.md) is ingevuld met functionaliteit.
-
-## Voor agents / contributors
-
-| Document | Inhoud |
+| Doc | Rol |
 | --- | --- |
-| [`AGENTS.md`](AGENTS.md) | Stack, architectuur, PWA, testen, communicatie, DoD |
-| [`.cursor/rules/`](.cursor/rules/) | Architectuur, communicatie, versiebeheer, Pages, testing, scope |
-| [`docs/app-spec.md`](docs/app-spec.md) | Productfeatures (nog in te vullen) |
+| [`AGENTS.md`](AGENTS.md) | Canon: stack, architectuur, PWA, tests, communicatie, DoD |
+| [`.cursor/rules/`](.cursor/rules/) | Uitwerking per onderwerp |
+| [`docs/app-spec.md`](docs/app-spec.md) | Productfeatures |
 
-## Geplande stack & architectuur
+**Stack:** Vite · TS · Vitest · `vite-plugin-pwa` · Actions→Pages · vertical slices.
 
-- Vite + TypeScript
-- Vitest (`npm test` verplicht groen vóór done/deploy)
-- PWA via `vite-plugin-pwa` (Workbox)
-- Deploy: GitHub Actions → GitHub Pages (`/Reaction-game/`)
-- Modulair: screaming architecture, vertical slices, SOLID; optimaliseer voor
-  eenvoudig refactoren
-
-## Volgende stap
-
-Beschrijf in `docs/app-spec.md` (of in chat) de gewenste functionaliteit:
-schermen, spelregels, offline-gedrag, acceptatiecriteria. Daarna kan een agent
-de scaffold en features bouwen volgens `AGENTS.md`.
+**Volgende stap:** functionaliteit in `docs/app-spec.md` of chat; daarna scaffold + slices.

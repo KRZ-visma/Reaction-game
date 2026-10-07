@@ -1,48 +1,27 @@
 ---
-description: How to scaffold and grow the TypeScript PWA without inventing product scope
+description: Scaffold allowed; no invented product scope
 alwaysApply: true
 ---
 
-# Scaffold & scope control
+# Scaffold & scope
 
-## Source of product truth
+- Productwaarheid: alleen `docs/app-spec.md`. Ontbreekt het → niet bouwen.
+- Nieuwe features van de gebruiker: **eerst spec**, dan code.
 
-- Functional requirements live only in `docs/app-spec.md`.
-- If a feature is not in that file, do not implement it.
-- When the user describes new behavior, **update the spec first**, then code.
+## Mag zonder volle spec
 
-## Allowed without a full product spec
+Vite+TS layout (`features/`/`app/`/`shared/`), Vitest + smoke test, PWA
+manifest/SW, `app-update`-slice, Pages-workflow (tests vóór deploy), minimale
+shell, README (dev/test/deploy/update).
 
-Agents may create or maintain:
+## Mag niet zonder spec
 
-- Vite + TypeScript project layout with `src/features/`, `src/app/`, `src/shared/`
-- Vitest setup with `npm test` and at least one smoke test
-- PWA manifest, icons placeholders, service worker registration
-- Version badge + update prompt UI as an `app-update` (or similar) vertical slice
-- GitHub Actions Pages deploy workflow (tests run before build/deploy)
-- Minimal home shell (“Reaction-game”) that proves install + update works
-- README with install, local dev, test, deploy, and update-test steps
+Spelregels, scores, accounts, leaderboards, marketing, analytics, SDKs.
 
-## Not allowed without spec
+## Volgorde
 
-- Game rules, scoring, accounts, leaderboards, sound packs, etc.
-- Extra pages/marketing sites
-- Analytics, ads, or third-party SDKs
-
-## Implementation order (when building)
-
-1. Tooling + `base` path + strict TS + Vitest (`npm test`) + feature folder skeleton
-2. Manifest + icons + SW + update UX + version string as a bounded slice (+ tests)
-3. Deploy workflow with test gate
-4. Features from `docs/app-spec.md` **one vertical slice at a time** (model/tests, then UI)
-5. Keep `npm test`, architecture boundaries, update, and deploy green after each slice
-
-## Quality bar
-
-- `npm test`, typecheck, and `npm run build` must all pass before claiming done.
-- Agents must actually run the tests; green CI alone is not a substitute if
-  tests were never executed in the session.
-- Prefer small, readable, functionally separated modules over premature abstractions.
-- Structure must stay easy to refactor (see `.cursor/rules/architecture.mdc`).
-- CSS: one clear visual direction; follow the user’s frontend design rules when
-  building visible UI. For a game shell, prioritize clarity and tap targets.
+1. Tooling + `base` + Vitest + feature-skeleton  
+2. PWA + update-slice + tests  
+3. Deploy met test-gate  
+4. Spec-features, één vertical slice tegelijk  
+5. `npm test` + grenzen groen houden

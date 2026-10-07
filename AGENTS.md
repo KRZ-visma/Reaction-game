@@ -1,224 +1,102 @@
 # Agent instructions — Reaction-game PWA
 
-Dit document is de bron van waarheid voor coding agents die aan dit project werken.
-Productfunctionaliteit staat in [`docs/app-spec.md`](docs/app-spec.md). Zolang die
-spec onvolledig is: **scaffold en infrastructuur wel**, feature-UI alleen volgens
-wat daar expliciet staat.
+Canon voor coding agents. Product: [`docs/app-spec.md`](docs/app-spec.md).
+Zonder features in die spec: alleen scaffold/infra; geen zelfbedachte gameplay.
+
+Details: [`.cursor/rules/`](.cursor/rules/).
 
 ## Doel
 
-Bouw een **progressive web app (PWA)** in **TypeScript**, gehost op **GitHub Pages**,
-met betrouwbaar **versiebeheer en automatische client-updates** (inclusief telefoon
-na “Add to Home Screen”).
+TypeScript **PWA** op **GitHub Pages**, met betrouwbare **client-updates**
+(ook op telefoon na installatie).
 
-## Tech stack (vast)
+## Stack (vast)
 
-| Onderdeel | Keuze | Toelichting |
-| --- | --- | --- |
-| Bundler / dev | Vite | Snelle builds, simpele GH Pages-output |
-| Taal | TypeScript (strict) | Geen losse `.js` app-code |
-| UI | Vanilla TS + CSS (tenzij `docs/app-spec.md` anders voorschrijft) | Lichtgewicht, ideaal voor games/PWA |
-| PWA | `vite-plugin-pwa` (Workbox) | Precache, update-detectie, offline |
-| Tests | Vitest (+ Testing Library alleen als DOM-tests nodig zijn) | Unit/integratie in TypeScript |
-| Deploy | GitHub Actions → GitHub Pages | Build op `main`, publish `dist` |
-| Package manager | npm | Lockfile committen |
+| | |
+| --- | --- |
+| Bundler | Vite |
+| Taal | TypeScript strict |
+| UI | Vanilla TS + CSS (tenzij spec anders) |
+| PWA | `vite-plugin-pwa` (Workbox) |
+| Tests | Vitest (`*.test.ts` / `*.spec.ts`) |
+| Deploy | GitHub Actions → Pages (`dist`) |
+| Packages | npm + lockfile |
 
-Wijzig de stack niet zonder expliciete instructie van de gebruiker.
+Stack wijzigen alleen op expliciete instructie.
 
-## Architectuur (wendbaar & modulair)
+## Architectuur
 
-Het belangrijkste ontwerpprincipe is **modulaire ontwikkeling**: de codebase moet
-**makkelijk refactorbaar** blijven. Een architectuur is hier “goed” als je een
-feature kunt verplaatsen, herschrijven of verwijderen zonder een kettingreactie
-door half de app. Wendbaarheid > premature abstracties.
+Succes = **makkelijk refactorbaar**. Wendbaar > premature abstractie.
 
-Zie details en voorbeelden in [`.cursor/rules/architecture.mdc`](.cursor/rules/architecture.mdc).
-
-### Kernregels
-
-1. **Functionele scheiding van modules** — groepeer op *wat de gebruiker kan*
-   (features/use cases), niet op technische lagen als primaire indeling
-   (`components/`, `services/`, `utils/` als enigen structuur is fout).
-2. **Screaming architecture** — open `src/` en je moet meteen zien *waar de app
-   over gaat* (bijv. `play-round/`, `high-scores/`, `app-update/`), niet alleen
-   frameworks of generieke mappen.
-3. **Vertical slices** — lever per feature een doorsnede: UI + domeinlogica +
-   persistatie/adapters + tests in één feature-map. Wijzigingen aan één feature
-   blijven bij voorkeur binnen die map.
-4. **SOLID als richtlijn, niet als dogma** — vooral:
-   - **S**: één reden tot wijziging per module/bestand waar praktisch
-   - **O/D**: afhankelijk van stabiele interfaces/ports; infra (DOM, storage,
-     SW) achter dunne adapters
-   - **I/L**: geen god-interfaces; gedrag vervangbaar zonder consumers te breken
-5. **Dunne shared kernel** — `src/shared/` alleen voor echt gedeelde primitives
-   (geen feature-logica “even centraal zetten”). Liever dupliceren tot een
-   tweede gebruik een extractie rechtvaardigt.
-6. **Refactorbaarheid eerst** — vermijd vroege frameworks-in-frameworks,
-   diepe inheritance, en globale singletons. Prefereren: pure functies, kleine
-   modules, expliciete dependencies, feature-lokale state.
-
-### Richtlijn-indeling (na scaffold)
+- Modules op **functie/capability**, niet op technische lagen.
+- **Screaming architecture** + **vertical slices** + **SOLID** (richtlijn, geen ceremonie).
+- Dun `shared/`; feature-logica hoort in de slice.
+- Cross-feature alleen via `index.ts` (liever: geen koppeling).
 
 ```text
 src/
-  main.ts                 # composition root: wire slices, geen business logic
-  app/                    # shell: routing/nav, layout host
-  features/
-    <feature-name>/       # één vertical slice (schreeuwt de domeinnaam)
-      ui/
-      model/              # pure domeinlogica
-      data/               # storage/adapters (optioneel)
-      index.ts            # publieke API van de slice
-      *.test.ts
-  shared/                 # minimaal; geen feature-lekkage
+  main.ts                 # composition root
+  app/                    # shell
+  features/<feature>/     # ui/ + model/ + data?/ + index.ts + tests
+  shared/                 # minimaal
   styles/
 ```
 
-Feature-namen en slices volgen `docs/app-spec.md`. Infrastructuur-slices
-(bijv. `app-update` voor de PWA-updateprompt) mogen bestaan; die zijn ook
-functioneel begrensd.
+Zie `.cursor/rules/architecture.mdc`.
 
-## Repository-conventies
+## Repo
 
-- Broncode onder `src/`, georganiseerd als hierboven (features = modules).
-- Entry/composition root: `src/main.ts`. Globale styles: `src/styles/`.
-- Statische assets (icons, splash) onder `public/`.
-- `base` in Vite = repository-naam op GitHub Pages project-site:
-  `https://<user>.github.io/<repo>/` → `base: '/<repo>/'`.
-  Voor dit repo: **`base: '/Reaction-game/'`** tenzij Pages later op een custom
-  domain of user-site staat (dan documenteren in README en Vite `base` aanpassen).
-- Geen secrets in de client. Alles wat in de browser draait is publiek.
-- Geen onnodige dependencies. Prefereren van Web Platform APIs.
-- Importeer andere features alleen via hun `index.ts` (publieke API); geen
-  deep-imports in interne bestanden van een andere slice.
+- `base: '/Reaction-game/'` (Pages project-site).
+- Assets: `public/`. Geen secrets in de client.
+- Features importeren alleen elkaars publieke API.
 
-## Verplichte PWA-eigenschappen
+## PWA & updates
 
-1. **Web App Manifest** (`name`, `short_name`, `start_url`, `display: standalone`,
-   `background_color`, `theme_color`, icons 192 + 512, `purpose` waar nodig).
-2. **Service worker** via Workbox (generateSW of injectManifest — kies één en blijf
-   daarbij). Precache van build-assets; runtime-caching alleen als de spec dat vraagt.
-3. **Installeerbaar** op mobiel (geldige manifest + SW + HTTPS via Pages).
-4. **Updateflow** zoals beschreven in
-   [`.cursor/rules/pwa-versioning.mdc`](.cursor/rules/pwa-versioning.mdc).
-5. **Offline**: app-shell laadt offline na eerste bezoek. Feature-data volgens spec.
+Manifest + SW + installeerbaar + offline shell. Unieke build-versie zichtbaar in UI.
+Update via prompt (**Vernieuwen**), niet stille `autoUpdate` als default.
+Op foreground opnieuw `registration.update()`.
+Zie `.cursor/rules/pwa-versioning.mdc`.
 
-## Versie & automatische update (niet optioneel)
+## Testen
 
-Elke productiebuild moet een **zichtbare, unieke versie** meenemen (bijv. uit
-`package.json` + korte git SHA of build timestamp), geïnjecteerd als
-`import.meta.env`-achtige constante.
+Elke behavior change → tests bijwerken. **`npm test` lokaal groen** vóór done.
+CI: `npm ci` → `npm test` → typecheck → `npm run build` → pas dan deploy.
+Geen E2E tenzij de spec dat eist. Zie `.cursor/rules/testing.mdc`.
 
-Op de client:
+## Pages
 
-1. Detecteer een wachtende service worker (`updatefound` / `controllerchange` /
-   Workbox `registerType: 'prompt'` of equivalent).
-2. Toon een **duidelijke UI** (“Nieuwe versie beschikbaar”) met actie **Vernieuwen**.
-3. Bij bevestiging: activeer de nieuwe SW (`skipWaiting`) en **reload** alle clients.
-4. Optioneel (specificeer in UI): stille check bij `visibilitychange` / interval
-   zodat een telefoon die dagen open blijft alsnog een update ziet zonder app-store.
+`.github/workflows/deploy-pages.yml`: push `main` + `workflow_dispatch`.
+Tests rood = geen deploy. Zie `.cursor/rules/github-pages.mdc`.
 
-Zie details en verboden patronen in `.cursor/rules/pwa-versioning.mdc`.
+## Werkwijze
 
-## Testen (verplicht)
+1. Lees `AGENTS.md`, rules, `docs/app-spec.md`.
+2. Spec leeg → scaffold (Vite/TS/PWA/tests/Pages/update-slice). Geen spel verzinnen.
+3. Spec gevuld → spec eerst bijwerken, daarna **één vertical slice** per keer.
 
-- Testrunner: **Vitest**, geïntegreerd met Vite. Script: `npm test` (en
-  `npm run test:coverage` als coverage is ingericht).
-- Plaats tests naast of onder `src/` als `*.test.ts` / `*.spec.ts`.
-- Test pure logica (spelregels, timing, score, versie-helpers) met unit tests.
-- Test DOM/update-UI met lichte component- of integratietests waar dat waarde
-  toevoegt; geen E2E-framework tenzij de spec dat eist.
-- Elke nieuwe feature of bugfix **moet** bijbehorende tests krijgen of
-  bestaande tests uitbreiden voordat de wijziging “done” is.
-- Agents **moeten** de tests lokaal uitvoeren (`npm test`) en pas afronden als
-  die groen zijn. Rood laten en “later fixen” is niet toegestaan.
-- CI (deploy-workflow of aparte `ci.yml`): `npm ci` → `npm test` → typecheck →
-  `npm run build`. Deploy alleen na geslaagde tests.
+## Definition of done
 
-Zie `.cursor/rules/testing.mdc`.
+- [ ] Vertical slice onder `src/features/<name>/` (of bewuste `app/`/`shared/`)
+- [ ] Geen lagen-dump (`components/`/`services/`/`utils/` als primaire structuur)
+- [ ] Tests bijgewerkt; `npm test` groen (lokaal uitgevoerd)
+- [ ] Typecheck + `npm run build` groen
+- [ ] Manifest/SW in `dist`; versie zichtbaar; updateprompt ok
+- [ ] CI draait tests vóór deploy; `base`-paden kloppen
+- [ ] Blijft makkelijk refactorbaar
 
-## GitHub Pages
+## Verboden
 
-- Workflow onder `.github/workflows/deploy-pages.yml`.
-- Trigger: push naar `main` (en desgewenst `workflow_dispatch`).
-- Pipeline: `npm ci` → `npm test` → typecheck → `npm run build` → upload `dist`
-  → deploy naar Pages. Tests falen = geen deploy.
-- `404.html` kopie van `index.html` alleen als client-side routing nodig is.
-- Documenteer in README: Pages-source = GitHub Actions, URL, en hoe je force-update
-  test (hard refresh / “Vernieuwen”-knop na deploy).
+- Native wrappers/backends/frameworks zonder vraag of spec
+- SW uitzetten in prod; stille guideline-breaks; bevestigingspraat
+- Feature-logica in `shared/` zonder tweede echte consumer
+- Extra markdown buiten `README.md`, `AGENTS.md`, `docs/*`, rules — tenzij gevraagd
 
-Zie `.cursor/rules/github-pages.mdc`.
+## Communicatie & taal
 
-## Werkwijze voor agents
+Kort, duidelijk, krachtig. Geen lof of vulpraat. Verzoeken toetsen aan deze
+richtlijnen; bij conflict: **verdedigen**, niet stil aanpassen. Override alleen
+expliciet. Zie `.cursor/rules/communication.mdc`.
 
-### Fase A — nu (instructies + later scaffold)
-
-1. Lees `AGENTS.md`, `.cursor/rules/*`, en `docs/app-spec.md`.
-2. Als de app-spec nog geen features heeft: **niet** zelf een speelconcept verzinnen.
-   Wel toegestaan: lege Vite+TS+PWA+Pages scaffold met update-UI en versiebadge.
-3. Als de app-spec wél features heeft: implementeer precies die scope; geen scope creep.
-
-### Fase B — wanneer de gebruiker functionaliteit beschrijft
-
-1. Werk `docs/app-spec.md` bij (acceptatiecriteria, schermen, data, offline-gedrag,
-   slice-namen).
-2. Commit de spec, daarna **per vertical slice** implementeren tegen die spec.
-3. Houd architectuurgrenzen, PWA/update/deploy-gedrag en tests intact bij elke feature.
-
-### Definition of done (per feature of scaffold)
-
-- [ ] Feature als **vertical slice** onder `src/features/<name>/` (of bewust
-      gedeelde shell onder `src/app/` / `src/shared/`), functioneel begrensd
-- [ ] Geen nieuwe technische dumping-ground mappen; screaming names behouden
-- [ ] Publieke API via feature-`index.ts`; geen onnodige cross-feature coupling
-- [ ] Relevante unit/integratietests geschreven of bijgewerkt (bij voorkeur op `model/`)
-- [ ] `npm test` lokaal uitgevoerd en **groen** (agent toont of bevestigt resultaat)
-- [ ] Typecheck strict zonder errors
-- [ ] `npm run build` slaagt lokaal
-- [ ] Manifest + SW aanwezig in `dist`
-- [ ] Versie zichtbaar in UI (of debug-footer)
-- [ ] Updateprompt werkt (beschreven of handmatig geverifieerd)
-- [ ] CI/deploy-workflow draait tests vóór build/deploy
-- [ ] Deploy-workflow aanwezig en documentatie in README klopt
-- [ ] Geen regressie op `base`-paden (assets laden onder `/Reaction-game/`)
-- [ ] Resultaat blijft **makkelijk refactorbaar** (kleine modules, duidelijke grenzen)
-
-## Wat agents niet mogen doen
-
-- Native app stores, Capacitor/Cordova, of backend-servers introduceren tenzij gevraagd.
-- Service worker uitschakelen “voor het gemak” in productie.
-- `skipWaiting` zonder user-feedback bij breaking UI-changes — standaard is prompt + reload.
-- Groot framework toevoegen zonder dat de spec dat vereist.
-- Lagen-eerst structuur (`components/`, `services/`, `utils/` als primaire indeling)
-  in plaats van feature-slices.
-- Feature-logica in `shared/` parkeren “voor hergebruik” zonder tweede echte consumer.
-- Richtlijnen stilzwijgend negeren of afzwakken wanneer de gebruiker iets vraagt
-  dat ermee botst — pushback is verplicht (zie Communicatie).
-- Bevestigings- of vulpraat in plaats van inhoud.
-- Markdown/docs uitbreiden buiten `README.md`, `AGENTS.md`, `docs/*` en rules, tenzij gevraagd.
-
-## Communicatie
-
-Zie [`.cursor/rules/communication.mdc`](.cursor/rules/communication.mdc).
-
-- **Kort, duidelijk, krachtig.** Geen opvulling, geen herhaling van de vraag,
-  geen lange inleidingen. Zeg wat er is gedaan, wat er openstaat, of wat er mis
-  is — en stop.
-- **Geen bevestigingspraat.** Geen “goed punt”, “daar had ik niet aan gedacht”,
-  “uitstekend idee”, of andere sociale validatie. De gebruiker vraagt om werk en
-  oordeel, niet om aanmoediging.
-- **Kritisch op verzoeken.** Toets elke vraag/instructie aan `AGENTS.md` en
-  `.cursor/rules/*`. Als iets botst (stack, architectuur, tests, PWA-updates,
-  scope, DoD): **verdedig de richtlijn**. Niet stilzwijgend negeren, niet
-  “even aanpassen” om de gebruiker te volgen, niet half toepassen.
-- Bij conflict: benoem in één tot drie zinnen *welke* richtlijn, *waarom* die
-  geldt, en *welk alternatief* wél past — wacht op expliciete override als de
-  gebruiker de richtlijn bewust wil breken.
-- Onduidelijke of tegenstrijdige instructies: kort benoemen wat schuurt; niet
-  gokken in strijd met vastgelegde regels.
-
-## Taal
-
-- Code, identifiers, commit messages: **Engels**.
-- Gebruikersgerichte UI-copy: **Nederlands**, tenzij `docs/app-spec.md` anders zegt.
-- Agent-communicatie met de gebruiker: **Nederlands**, in de stijl hierboven.
+- Code/commits: Engels
+- UI-copy: Nederlands (tenzij spec anders)
+- Chat met gebruiker: Nederlands, in deze stijl
