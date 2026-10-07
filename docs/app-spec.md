@@ -1,61 +1,99 @@
 # App-spec — Reaction-game
 
-Leeg = geen feature-implementatie. Canon naast dit bestand: `AGENTS.md`.
+Canon naast dit bestand: `AGENTS.md`.
 
 ## Status
 
-- [ ] Concept
-- [ ] Schermen
-- [ ] Acceptatiecriteria
-- [ ] Offline per feature
-- [ ] Klaar om te bouwen
+- [x] Concept
+- [x] Schermen
+- [x] Acceptatiecriteria
+- [x] Offline per feature
+- [x] Klaar om te bouwen
 
 ## Samenvatting
 
-_Wat / voor wie / kernactie._
+Reactie-PWA voor telefoon/tablet: verzamel in één pot zo veel mogelijk bolletjes via de camera. De speler ziet zichzelf fullscreen; bolletjes verschijnen over het camerabeeld. Kernactie: beweeg je handen naar de bolletjes om ze te pakken vóór de tijd om is.
 
 ## Doelgroep
 
-Primair · secondair · oriëntatie · a11y-minimum:
+Primair: spelers op telefoon/tablet (staand of zittend voor de camera).  
+Secondair: desktop met webcam (zelfde flow).  
+Oriëntatie: portrait-first; landscape mag.  
+A11y-minimum: grote touch-targets op setup/eind; zichtbare countdown en score; geen alleen-kleur-signaal voor collect.
 
 ## Niet-doelen
 
-_
+- Accounts, multiplayer, leaderboards, social share
+- Native apps / backends
+- Extra spelmodi buiten de eerste pot (tot aparte spec)
+- Marketing, analytics, push
 
 ## Features
 
-### Feature: _naam_
+### Feature: Bolletjes-pot
 
-- Beschrijving:
-- User story:
+- Beschrijving: Eerste beleving. Speler kiest 1 of 2 minuten, start het spel, camera detecteert de speler, countdown 3–2–1, daarna zo veel mogelijk bolletjes verzamelen tot de tijd om is.
+- User story: Als speler wil ik in één timed pot bolletjes pakken met mijn handen in beeld, zodat ik mijn reactie en score zie.
 - UI:
+  - Setup: merk/titel, keuze duur (1 min / 2 min), knop **Start**
+  - Speelscherm: fullscreen camerabeeld (mirrored), bolletjes-overlay, score, resterende tijd
+  - Detectie: hint “Ga voor de camera…” tot persoon gedetecteerd
+  - Countdown: groot 3, 2, 1 over het beeld
+  - Einde: score + **Opnieuw**
 - Interactie:
-- Data:
-- Offline:
+  1. Kies duur → Start → camera-toestemming
+  2. Pose/persoon detecteren → countdown → spelen
+  3. Bolletjes spawnen op willekeurige plekken; raken met hand-landmarks = verzameld (+1)
+  4. Timer 0 → eindscherm
+- Data: alleen runtime (duurkeuze, score, fase); geen persistence verplicht
+- Offline: app-shell + assets via SW; MediaPipe-model na eerste succesvolle load uit cache (eerste load mag netwerk)
 - Acceptatiecriteria:
-  - [ ]
-- Te testen:
-- Slice (`src/features/…`):
+  - [ ] Speler kan 1 of 2 minuten kiezen vóór start
+  - [ ] Na Start vraagt de app camera en toont fullscreen live beeld
+  - [ ] Spel wacht op persoonsdetectie, daarna countdown 3–2–1, daarna spelen
+  - [ ] Bolletjes zichtbaar over het camerabeeld; collect via hand-overlap verhoogt score
+  - [ ] Pot stopt na gekozen duur; eindscore zichtbaar; Opnieuw terug naar setup
+  - [ ] Versie zichtbaar; updateprompt volgens PWA-regels
+- Te testen: domein (fases, timer, spawn/collect, score); UI-smoke zonder echte camera waar mogelijk
+- Slice (`src/features/…`): `bolletjes-pot` (+ bestaande `app-update`)
+
+### Feature: App-update (scaffold)
+
+- Beschrijving: Zichtbare build-versie; prompt bij nieuwe SW (**Vernieuwen** / Later)
+- Slice: `src/features/app-update/`
 
 ## Schermen
 
 | Scherm | Route | Doel | Vanaf |
 | --- | --- | --- | --- |
-| | | | |
+| Setup | `/` (hash) | Duur kiezen, starten | App open / Opnieuw |
+| Detectie | `/` | Wachten op persoon in camera | Na Start + camera ok |
+| Countdown | `/` | 3–2–1 | Na detectie |
+| Spelen | `/` | Bolletjes verzamelen | Na countdown |
+| Einde | `/` | Score tonen, opnieuw | Timer 0 |
 
 ## Domeinregels
 
-_
+1. Duur: uitsluitend `60` of `120` seconden; default `60`.
+2. Fases: `setup` → `camera` → `detecting` → `countdown` → `playing` → `finished` (of terug naar `setup` via Opnieuw / fout).
+3. Countdown: exact de waarden 3, 2, 1; speeltijd start na “1”.
+4. Bolletje: cirkel op genormaliseerde coords (0–1) over het beeld; radius vast genoeg voor touch/hand op mobiel.
+5. Spawn: tijdens `playing` periodiek nieuwe bolletjes tot een max tegelijk op het scherm; geen overlap met bestaande binnen minimale afstand.
+6. Collect: hand-landmark (pols/vinger) binnen bolletje-radius → bolletje weg, score +1.
+7. Camera: voorkeur `environment` niet verplicht; `user` (selfie) mirrored voor natuurlijke sturing.
+8. Geen score opslaan tussen sessies (v1).
 
 ## Content / assets
 
-_
+- UI-copy Nederlands
+- MediaPipe Pose Landmarker (lite) voor detectie + handposities
+- PWA-iconen / manifest naam: Reaction-game
 
 ## Update — alleen afwijkingen
 
-_
+Geen; standaard `pwa-versioning.mdc`.
 
 ## Open
 
-1.
-2.
+1. Geluid bij collect/countdown — later, niet blokkerend
+2. Highscore lokaal — latere slice
