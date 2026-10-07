@@ -1,0 +1,71 @@
+---
+description: Modular vertical-slice architecture optimized for easy refactoring
+alwaysApply: true
+---
+
+# Architecture — modular, screaming, refactorable
+
+## Success criterion
+
+The architecture succeeds when the codebase stays **easy to refactor**: add,
+change, replace, or delete a feature without a ripple through unrelated modules.
+Optimize for change, not for a perfect abstract hierarchy on day one.
+
+## Non-negotiables
+
+1. **Modular development** is the primary organizing principle.
+2. Modules are **separated by function / user capability**, not by technical
+   layer as the top-level structure.
+3. **Screaming architecture**: folder names should shout the domain
+   (`play-round`, `results`, `app-update`), not the framework.
+4. **Vertical slices**: each feature owns its UI, model, optional data adapters,
+   and tests. Deliver one slice at a time.
+5. **SOLID** guides boundaries (especially SRP and dependency inversion via
+   small ports/adapters). Do not invent ceremony that hurts refactor speed.
+6. Keep a **thin shared kernel**. Feature logic does not leak into `shared/`.
+
+## Preferred layout
+
+```text
+src/
+  main.ts                 # composition root only
+  app/                    # shell / host
+  features/<feature>/     # vertical slice
+    ui/
+    model/
+    data/                 # optional
+    index.ts              # public API
+    *.test.ts
+  shared/                 # truly cross-cutting only
+  styles/
+```
+
+## Dependencies
+
+- `main.ts` / `app/` may compose features.
+- Features depend on `shared/` and their own internals.
+- Features must **not** deep-import another feature’s internals; use that
+  feature’s `index.ts` only — better yet, avoid feature-to-feature coupling.
+- Domain `model/` code stays pure where possible (easy unit tests, easy moves).
+
+## Vertical slice workflow
+
+1. Name the slice from the capability in `docs/app-spec.md`.
+2. Implement model + tests first (or with UI), then wire UI/adapters.
+3. Export a small public API from `index.ts`.
+4. Register the slice in the composition root.
+5. Done means the slice can be understood and refactored in isolation.
+
+## Refactorability smells (avoid / fix)
+
+- Top-level `components/`, `hooks/`, `services/`, `utils/` dumping grounds
+- God modules that know every feature
+- Shared “manager” singletons that accumulate unrelated state
+- Premature generic frameworks, deep class hierarchies
+- Cross-feature imports that bypass public APIs
+- Tests that only work through the full app shell when unit tests would suffice
+
+## When in doubt
+
+Prefer the change that makes the next refactor cheaper: smaller modules,
+clearer names, fewer cross-links, pure logic over tangled UI state.

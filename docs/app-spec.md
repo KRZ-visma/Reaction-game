@@ -56,6 +56,17 @@ _Score, timing, levels, foutafhandeling, reset, …_
 
 _Icons, geluid, haptics, copy-tonality (NL), …_
 
+## Modules / vertical slices (voor agents)
+
+Noem per capability de voorziene slice-naam onder `src/features/` (functioneel,
+niet technisch). Voorbeeld: `play-round`, `results`, `settings`. Agents houden
+slices gescheiden (screaming architecture + SOLID) zodat refactoren makkelijk
+blijft — zie `AGENTS.md` en `.cursor/rules/architecture.mdc`.
+
+| Capability | Slice-map | Opmerkingen |
+| --- | --- | --- |
+| | | |
+
 ## Testbaarheid (voor agents)
 
 Per feature in de lijst hierboven: noem wat geautomatiseerd getest moet worden

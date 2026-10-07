@@ -15,10 +15,10 @@ alwaysApply: true
 
 Agents may create or maintain:
 
-- Vite + TypeScript project layout
+- Vite + TypeScript project layout with `src/features/`, `src/app/`, `src/shared/`
 - Vitest setup with `npm test` and at least one smoke test
 - PWA manifest, icons placeholders, service worker registration
-- Version badge + update prompt UI
+- Version badge + update prompt UI as an `app-update` (or similar) vertical slice
 - GitHub Actions Pages deploy workflow (tests run before build/deploy)
 - Minimal home shell (“Reaction-game”) that proves install + update works
 - README with install, local dev, test, deploy, and update-test steps
@@ -31,17 +31,18 @@ Agents may create or maintain:
 
 ## Implementation order (when building)
 
-1. Tooling + `base` path + strict TS + Vitest (`npm test`)
-2. Manifest + icons + SW + update UX + version string (+ tests)
+1. Tooling + `base` path + strict TS + Vitest (`npm test`) + feature folder skeleton
+2. Manifest + icons + SW + update UX + version string as a bounded slice (+ tests)
 3. Deploy workflow with test gate
-4. Features from `docs/app-spec.md` one vertical slice at a time (tests first or with code)
-5. Keep `npm test`, update, and deploy green after each slice
+4. Features from `docs/app-spec.md` **one vertical slice at a time** (model/tests, then UI)
+5. Keep `npm test`, architecture boundaries, update, and deploy green after each slice
 
 ## Quality bar
 
 - `npm test`, typecheck, and `npm run build` must all pass before claiming done.
 - Agents must actually run the tests; green CI alone is not a substitute if
   tests were never executed in the session.
-- Prefer small, readable modules over abstractions.
+- Prefer small, readable, functionally separated modules over premature abstractions.
+- Structure must stay easy to refactor (see `.cursor/rules/architecture.mdc`).
 - CSS: one clear visual direction; follow the user’s frontend design rules when
   building visible UI. For a game shell, prioritize clarity and tap targets.

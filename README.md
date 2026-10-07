@@ -12,16 +12,18 @@ client-updates via een service worker.
 
 | Document | Inhoud |
 | --- | --- |
-| [`AGENTS.md`](AGENTS.md) | Stack, PWA-eisen, testen, werkwijze, definition of done |
-| [`.cursor/rules/`](.cursor/rules/) | Versiebeheer/updates, GitHub Pages, testing, scope control |
+| [`AGENTS.md`](AGENTS.md) | Stack, architectuur, PWA, testen, werkwijze, definition of done |
+| [`.cursor/rules/`](.cursor/rules/) | Architectuur, versiebeheer, Pages, testing, scope |
 | [`docs/app-spec.md`](docs/app-spec.md) | Productfeatures (nog in te vullen) |
 
-## Geplande stack
+## Geplande stack & architectuur
 
 - Vite + TypeScript
 - Vitest (`npm test` verplicht groen vóór done/deploy)
 - PWA via `vite-plugin-pwa` (Workbox)
 - Deploy: GitHub Actions → GitHub Pages (`/Reaction-game/`)
+- Modulair: screaming architecture, vertical slices, SOLID; optimaliseer voor
+  eenvoudig refactoren
 
 ## Volgende stap
 
