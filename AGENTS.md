@@ -192,10 +192,33 @@ Zie `.cursor/rules/github-pages.mdc`.
 - Lagen-eerst structuur (`components/`, `services/`, `utils/` als primaire indeling)
   in plaats van feature-slices.
 - Feature-logica in `shared/` parkeren “voor hergebruik” zonder tweede echte consumer.
+- Richtlijnen stilzwijgend negeren of afzwakken wanneer de gebruiker iets vraagt
+  dat ermee botst — pushback is verplicht (zie Communicatie).
+- Bevestigings- of vulpraat in plaats van inhoud.
 - Markdown/docs uitbreiden buiten `README.md`, `AGENTS.md`, `docs/*` en rules, tenzij gevraagd.
+
+## Communicatie
+
+Zie [`.cursor/rules/communication.mdc`](.cursor/rules/communication.mdc).
+
+- **Kort, duidelijk, krachtig.** Geen opvulling, geen herhaling van de vraag,
+  geen lange inleidingen. Zeg wat er is gedaan, wat er openstaat, of wat er mis
+  is — en stop.
+- **Geen bevestigingspraat.** Geen “goed punt”, “daar had ik niet aan gedacht”,
+  “uitstekend idee”, of andere sociale validatie. De gebruiker vraagt om werk en
+  oordeel, niet om aanmoediging.
+- **Kritisch op verzoeken.** Toets elke vraag/instructie aan `AGENTS.md` en
+  `.cursor/rules/*`. Als iets botst (stack, architectuur, tests, PWA-updates,
+  scope, DoD): **verdedig de richtlijn**. Niet stilzwijgend negeren, niet
+  “even aanpassen” om de gebruiker te volgen, niet half toepassen.
+- Bij conflict: benoem in één tot drie zinnen *welke* richtlijn, *waarom* die
+  geldt, en *welk alternatief* wél past — wacht op expliciete override als de
+  gebruiker de richtlijn bewust wil breken.
+- Onduidelijke of tegenstrijdige instructies: kort benoemen wat schuurt; niet
+  gokken in strijd met vastgelegde regels.
 
 ## Taal
 
 - Code, identifiers, commit messages: **Engels**.
 - Gebruikersgerichte UI-copy: **Nederlands**, tenzij `docs/app-spec.md` anders zegt.
-- Agent-communicatie met de gebruiker: **Nederlands**.
+- Agent-communicatie met de gebruiker: **Nederlands**, in de stijl hierboven.
