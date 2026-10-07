@@ -1,0 +1,44 @@
+---
+description: Required automated testing with Vitest and CI gate before done/deploy
+alwaysApply: true
+---
+
+# Testing
+
+## Stack
+
+- **Vitest** as the default test runner (same Vite config / aliases).
+- Prefer fast unit tests for domain logic (game rules, scoring, timers,
+  version parsing, update-state helpers).
+- Add DOM tests only when UI behavior is non-trivial; keep them small.
+- No Playwright/Cypress unless `docs/app-spec.md` explicitly requires E2E.
+
+## Layout & scripts
+
+- Files: `src/**/*.test.ts` or `src/**/*.spec.ts`.
+- `package.json` scripts:
+  - `test` → Vitest run (non-watch, CI-friendly)
+  - optional `test:watch` for local iteration
+- Colocate tests with the module under test when practical.
+
+## Agent obligations
+
+1. **Write or update tests** for every behavior change (feature or bugfix).
+2. **Run `npm test`** before claiming work is done; do not skip on “looks fine”.
+3. Fix failures before commit/push/PR update. Leaving red tests is not done.
+4. Scaffold phase: ship at least a smoke test suite (e.g. version helper or
+   trivial assert) so `npm test` exists and is wired into CI from day one.
+5. When reporting done, mention that tests were run and passed (or paste the
+   summary).
+
+## CI gate
+
+- Deploy and CI workflows must run `npm test` **before** `npm run build` /
+  Pages deploy.
+- A failing test job must fail the workflow (non-zero exit).
+
+## What not to do
+
+- Do not disable or delete failing tests to make CI green.
+- Do not rely only on manual browser checks for logic that can be unit-tested.
+- Do not add heavy E2E tooling without an explicit product requirement.

@@ -56,6 +56,12 @@ _Score, timing, levels, foutafhandeling, reset, …_
 
 _Icons, geluid, haptics, copy-tonality (NL), …_
 
+## Testbaarheid (voor agents)
+
+Per feature in de lijst hierboven: noem wat geautomatiseerd getest moet worden
+(bijv. scoreberekening, timingvensters, reset). Agents schrijven Vitest-tests
+daarvoor en voeren `npm test` uit vóór afronden — zie `AGENTS.md` / DoD.
+
 ## Versie & update (productkeuzes)
 
 Standaard uit agent-instructies (niet wijzigen tenzij nodig):

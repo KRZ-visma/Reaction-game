@@ -16,11 +16,12 @@ alwaysApply: true
 Agents may create or maintain:
 
 - Vite + TypeScript project layout
+- Vitest setup with `npm test` and at least one smoke test
 - PWA manifest, icons placeholders, service worker registration
 - Version badge + update prompt UI
-- GitHub Actions Pages deploy workflow
+- GitHub Actions Pages deploy workflow (tests run before build/deploy)
 - Minimal home shell (“Reaction-game”) that proves install + update works
-- README with install, local dev, deploy, and update-test steps
+- README with install, local dev, test, deploy, and update-test steps
 
 ## Not allowed without spec
 
@@ -30,15 +31,17 @@ Agents may create or maintain:
 
 ## Implementation order (when building)
 
-1. Tooling + `base` path + strict TS
-2. Manifest + icons + SW + update UX + version string
-3. Deploy workflow
-4. Features from `docs/app-spec.md` one vertical slice at a time
-5. Keep update/deploy green after each slice
+1. Tooling + `base` path + strict TS + Vitest (`npm test`)
+2. Manifest + icons + SW + update UX + version string (+ tests)
+3. Deploy workflow with test gate
+4. Features from `docs/app-spec.md` one vertical slice at a time (tests first or with code)
+5. Keep `npm test`, update, and deploy green after each slice
 
 ## Quality bar
 
-- `npm run build` and typecheck must pass before claiming done.
+- `npm test`, typecheck, and `npm run build` must all pass before claiming done.
+- Agents must actually run the tests; green CI alone is not a substitute if
+  tests were never executed in the session.
 - Prefer small, readable modules over abstractions.
 - CSS: one clear visual direction; follow the user’s frontend design rules when
   building visible UI. For a game shell, prioritize clarity and tap targets.

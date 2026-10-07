@@ -19,6 +19,7 @@ na “Add to Home Screen”).
 | Taal | TypeScript (strict) | Geen losse `.js` app-code |
 | UI | Vanilla TS + CSS (tenzij `docs/app-spec.md` anders voorschrijft) | Lichtgewicht, ideaal voor games/PWA |
 | PWA | `vite-plugin-pwa` (Workbox) | Precache, update-detectie, offline |
+| Tests | Vitest (+ Testing Library alleen als DOM-tests nodig zijn) | Unit/integratie in TypeScript |
 | Deploy | GitHub Actions → GitHub Pages | Build op `main`, publish `dist` |
 | Package manager | npm | Lockfile committen |
 
@@ -63,11 +64,29 @@ Op de client:
 
 Zie details en verboden patronen in `.cursor/rules/pwa-versioning.mdc`.
 
+## Testen (verplicht)
+
+- Testrunner: **Vitest**, geïntegreerd met Vite. Script: `npm test` (en
+  `npm run test:coverage` als coverage is ingericht).
+- Plaats tests naast of onder `src/` als `*.test.ts` / `*.spec.ts`.
+- Test pure logica (spelregels, timing, score, versie-helpers) met unit tests.
+- Test DOM/update-UI met lichte component- of integratietests waar dat waarde
+  toevoegt; geen E2E-framework tenzij de spec dat eist.
+- Elke nieuwe feature of bugfix **moet** bijbehorende tests krijgen of
+  bestaande tests uitbreiden voordat de wijziging “done” is.
+- Agents **moeten** de tests lokaal uitvoeren (`npm test`) en pas afronden als
+  die groen zijn. Rood laten en “later fixen” is niet toegestaan.
+- CI (deploy-workflow of aparte `ci.yml`): `npm ci` → `npm test` → typecheck →
+  `npm run build`. Deploy alleen na geslaagde tests.
+
+Zie `.cursor/rules/testing.mdc`.
+
 ## GitHub Pages
 
 - Workflow onder `.github/workflows/deploy-pages.yml`.
 - Trigger: push naar `main` (en desgewenst `workflow_dispatch`).
-- Build: `npm ci` → `npm run build` → upload `dist` → deploy naar Pages.
+- Pipeline: `npm ci` → `npm test` → typecheck → `npm run build` → upload `dist`
+  → deploy naar Pages. Tests falen = geen deploy.
 - `404.html` kopie van `index.html` alleen als client-side routing nodig is.
 - Documenteer in README: Pages-source = GitHub Actions, URL, en hoe je force-update
   test (hard refresh / “Vernieuwen”-knop na deploy).
@@ -91,11 +110,14 @@ Zie `.cursor/rules/github-pages.mdc`.
 
 ### Definition of done (per feature of scaffold)
 
-- [ ] `npm run build` slaagt lokaal
+- [ ] Relevante unit/integratietests geschreven of bijgewerkt
+- [ ] `npm test` lokaal uitgevoerd en **groen** (agent toont of bevestigt resultaat)
 - [ ] Typecheck strict zonder errors
+- [ ] `npm run build` slaagt lokaal
 - [ ] Manifest + SW aanwezig in `dist`
 - [ ] Versie zichtbaar in UI (of debug-footer)
 - [ ] Updateprompt werkt (beschreven of handmatig geverifieerd)
+- [ ] CI/deploy-workflow draait tests vóór build/deploy
 - [ ] Deploy-workflow aanwezig en documentatie in README klopt
 - [ ] Geen regressie op `base`-paden (assets laden onder `/Reaction-game/`)
 

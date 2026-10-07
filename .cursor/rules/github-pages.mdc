@@ -21,9 +21,9 @@ File: `.github/workflows/deploy-pages.yml`
 - Triggers: `push` to `main`, plus `workflow_dispatch`.
 - Permissions: `contents: read`, `pages: write`, `id-token: write`.
 - Concurrency group so overlapping deploys do not clash.
-- Steps: checkout → setup Node → `npm ci` → `npm run build` →
-  upload artifact → `deploy-pages`.
-- Fail the job if the build or typecheck fails.
+- Steps: checkout → setup Node → `npm ci` → `npm test` → typecheck →
+  `npm run build` → upload artifact → `deploy-pages`.
+- Fail the job if tests, typecheck, or build fail. Never deploy on red tests.
 
 ## SPA / game routing
 
