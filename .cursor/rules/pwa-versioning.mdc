@@ -1,0 +1,69 @@
+---
+description: PWA service worker versioning and forced client updates
+alwaysApply: true
+---
+
+# PWA versioning & updates
+
+## Goals
+
+- After a deploy to GitHub Pages, phones and desktops that already installed /
+  opened the PWA must be able to **detect and apply** the new build without
+  manual cache clearing.
+- Users should never be stuck on a stale shell for multiple sessions after a
+  release.
+
+## Required build identity
+
+- Every production build embeds a version string, e.g.
+  `1.0.0+a1b2c3d` (`package.json` version + short git SHA) or
+  `1.0.0+20260326T1200`.
+- Expose it to the app (Vite `define` / `import.meta.env`) and show it in a
+  discreet place (settings, about, or footer) so support can verify the build.
+
+## Service worker strategy
+
+Prefer **`vite-plugin-pwa`** with:
+
+- Precache of hashed build assets (content-hashed filenames).
+- `registerType: 'prompt'` (or equivalent manual prompt flow).
+- Do **not** use silent `autoUpdate` as the default unless the user explicitly
+  asks; games and interactive UIs need a controlled reload.
+
+On “Vernieuwen” / confirm:
+
+1. Tell the waiting worker to skip waiting.
+2. Reload the page (and other controlled clients if applicable) so the new
+   precache is active.
+
+Also:
+
+- Call `registration.update()` when the app becomes visible again
+  (`document.visibilitychange` → `visible`) so a phone left in standby still
+  checks for a new worker after a deploy.
+- Keep `start_url` and navigations under the Vite `base` path so the SW scope
+  matches GitHub Pages (`/Reaction-game/`).
+
+## Cache rules
+
+- HTML navigation: network-first or a strategy that picks up new
+  `index.html` / SW after deploy (Workbox defaults from the plugin are fine if
+  update prompt is wired).
+- Never long-cache `index.html` or `sw.js` / `workbox-*.js` with immutable
+  headers assumptions you do not control; rely on Workbox revisioning.
+- Do not teach users to “clear site data” as the primary update path.
+
+## UX copy (NL)
+
+- Title: “Nieuwe versie beschikbaar”
+- Body: short, e.g. “Er is een update. Tik op Vernieuwen om te laden.”
+- Primary button: “Vernieuwen”
+- Optional secondary: “Later” (dismiss until next visibility check)
+
+## Testing checklist
+
+1. Build A deployed → install PWA on phone.
+2. Bump version / change visible UI → deploy build B.
+3. Reopen app or return to foreground → update UI appears.
+4. Confirm → app reloads on build B (version string matches).
+5. Airplane mode after visit → shell still loads offline.

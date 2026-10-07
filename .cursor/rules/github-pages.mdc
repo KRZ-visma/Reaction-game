@@ -1,0 +1,40 @@
+---
+description: GitHub Pages hosting and deploy workflow for the PWA
+alwaysApply: true
+---
+
+# GitHub Pages deploy
+
+## Hosting model
+
+- Static site only: Vite `dist/` output.
+- Publish via **GitHub Actions** (Pages “GitHub Actions” source), not the
+  legacy `branch / docs folder` flow.
+- Project site URL shape:
+  `https://<owner>.github.io/Reaction-game/`
+- Vite config **must** set `base: '/Reaction-game/'` for that URL shape.
+
+## Workflow requirements
+
+File: `.github/workflows/deploy-pages.yml`
+
+- Triggers: `push` to `main`, plus `workflow_dispatch`.
+- Permissions: `contents: read`, `pages: write`, `id-token: write`.
+- Concurrency group so overlapping deploys do not clash.
+- Steps: checkout → setup Node → `npm ci` → `npm run build` →
+  upload artifact → `deploy-pages`.
+- Fail the job if the build or typecheck fails.
+
+## SPA / game routing
+
+- Prefer hash routing or a single-route app to avoid Pages 404 issues.
+- If path-based client routes are required: add a Pages-friendly fallback
+  (`404.html` = `index.html` or equivalent) and document it.
+
+## Agent checklist after changing deploy-related files
+
+- Confirm `base` matches the real Pages URL.
+- Confirm asset URLs in `index.html` are root-relative to `base`, not `/`.
+- Confirm the service worker scope covers that base path.
+- Mention in README how to enable Pages (Settings → Pages → GitHub Actions)
+  if the repo is new.

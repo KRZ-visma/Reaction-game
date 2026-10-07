@@ -1,0 +1,44 @@
+---
+description: How to scaffold and grow the TypeScript PWA without inventing product scope
+alwaysApply: true
+---
+
+# Scaffold & scope control
+
+## Source of product truth
+
+- Functional requirements live only in `docs/app-spec.md`.
+- If a feature is not in that file, do not implement it.
+- When the user describes new behavior, **update the spec first**, then code.
+
+## Allowed without a full product spec
+
+Agents may create or maintain:
+
+- Vite + TypeScript project layout
+- PWA manifest, icons placeholders, service worker registration
+- Version badge + update prompt UI
+- GitHub Actions Pages deploy workflow
+- Minimal home shell (“Reaction-game”) that proves install + update works
+- README with install, local dev, deploy, and update-test steps
+
+## Not allowed without spec
+
+- Game rules, scoring, accounts, leaderboards, sound packs, etc.
+- Extra pages/marketing sites
+- Analytics, ads, or third-party SDKs
+
+## Implementation order (when building)
+
+1. Tooling + `base` path + strict TS
+2. Manifest + icons + SW + update UX + version string
+3. Deploy workflow
+4. Features from `docs/app-spec.md` one vertical slice at a time
+5. Keep update/deploy green after each slice
+
+## Quality bar
+
+- `npm run build` and typecheck must pass before claiming done.
+- Prefer small, readable modules over abstractions.
+- CSS: one clear visual direction; follow the user’s frontend design rules when
+  building visible UI. For a game shell, prioritize clarity and tap targets.
