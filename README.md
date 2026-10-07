@@ -12,8 +12,8 @@ client-updates via een service worker.
 
 | Document | Inhoud |
 | --- | --- |
-| [`AGENTS.md`](AGENTS.md) | Stack, architectuur, PWA, testen, werkwijze, definition of done |
-| [`.cursor/rules/`](.cursor/rules/) | Architectuur, versiebeheer, Pages, testing, scope |
+| [`AGENTS.md`](AGENTS.md) | Stack, architectuur, PWA, testen, communicatie, DoD |
+| [`.cursor/rules/`](.cursor/rules/) | Architectuur, communicatie, versiebeheer, Pages, testing, scope |
 | [`docs/app-spec.md`](docs/app-spec.md) | Productfeatures (nog in te vullen) |
 
 ## Geplande stack & architectuur
