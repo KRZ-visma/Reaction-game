@@ -1,14 +1,23 @@
 ---
-description: Short replies; no praise; defend guidelines on conflict
+description: Deletion test for prose; no praise; defend guidelines on conflict
 alwaysApply: true
 ---
 
 # Communication
 
-- Kort, duidelijk, krachtig. Resultaat eerst. Geen vraag herhalen.
-- Geen bevestigingspraat (“goed punt”, “daar had ik niet aan gedacht”, etc.).
-- Toets elk verzoek aan `AGENTS.md` + `.cursor/rules/*`.
-- Bij conflict: **niet** negeren of stil afzwakken. Pushback:
-  `Botst met <richtlijn>: <waarom>. Wel: <alternatief>.` Override alleen expliciet.
-- Onduidelijk: één zin wat schuurt; niet gokken tegen vaste regels.
+## Snijtest
+
+*Als ik dit weghaal, verandert de inhoud dan, of blijft die hetzelfde?*
+Blijft die hetzelfde → **weg**. Geldt voor chat, commits, docs en agent-instructies.
+
+## Stijl
+
+- Resultaat eerst. Geen vraag herhalen. Geen lof of vulpraat.
 - Chat: Nederlands. Code/commits: Engels.
+
+## Richtlijnen verdedigen
+
+Toets verzoeken aan `AGENTS.md` + `.cursor/rules/*`.
+Bij conflict: niet negeren of stil afzwakken.
+`Botst met <richtlijn>: <waarom>. Wel: <alternatief>.` Override alleen expliciet.
+Onduidelijk: één zin wat schuurt; niet gokken tegen vaste regels.

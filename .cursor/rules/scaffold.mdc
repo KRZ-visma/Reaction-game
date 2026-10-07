@@ -5,23 +5,10 @@ alwaysApply: true
 
 # Scaffold & scope
 
-- Productwaarheid: alleen `docs/app-spec.md`. Ontbreekt het → niet bouwen.
-- Nieuwe features van de gebruiker: **eerst spec**, dan code.
+Productwaarheid: `docs/app-spec.md`. Ontbreekt → niet bouwen. Nieuwe features: eerst spec.
 
-## Mag zonder volle spec
+**Zonder volle spec mag:** Vite+TS (`features/`/`app/`/`shared/`), Vitest+smoke, PWA+`app-update`-slice, Pages-workflow, minimale shell, README.
 
-Vite+TS layout (`features/`/`app/`/`shared/`), Vitest + smoke test, PWA
-manifest/SW, `app-update`-slice, Pages-workflow (tests vóór deploy), minimale
-shell, README (dev/test/deploy/update).
+**Zonder spec mag niet:** spelregels, scores, accounts, leaderboards, marketing, analytics, SDKs.
 
-## Mag niet zonder spec
-
-Spelregels, scores, accounts, leaderboards, marketing, analytics, SDKs.
-
-## Volgorde
-
-1. Tooling + `base` + Vitest + feature-skeleton  
-2. PWA + update-slice + tests  
-3. Deploy met test-gate  
-4. Spec-features, één vertical slice tegelijk  
-5. `npm test` + grenzen groen houden
+**Volgorde:** tooling+base+Vitest+skeleton → PWA/update-slice+tests → deploy met test-gate → spec-features één slice tegelijk.

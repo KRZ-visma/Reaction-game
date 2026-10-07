@@ -1,6 +1,6 @@
 # App-spec — Reaction-game
 
-Productwaarheid naast `AGENTS.md`. Leeg = geen feature-implementatie.
+Leeg = geen feature-implementatie. Canon naast dit bestand: `AGENTS.md`.
 
 ## Status
 
@@ -12,14 +12,11 @@ Productwaarheid naast `AGENTS.md`. Leeg = geen feature-implementatie.
 
 ## Samenvatting
 
-_Wat / voor wie / kernactie in één zin._
+_Wat / voor wie / kernactie._
 
 ## Doelgroep
 
-- Primair: _
-- Secondair: _
-- Oriëntatie: _
-- A11y-minimum: _
+Primair · secondair · oriëntatie · a11y-minimum:
 
 ## Niet-doelen
 
@@ -27,22 +24,22 @@ _
 
 ## Features
 
-Herhaal per feature:
-
 ### Feature: _naam_
 
 - Beschrijving:
 - User story:
 - UI:
 - Interactie:
-- Data (localStorage / IDB / geen):
+- Data:
 - Offline:
 - Acceptatiecriteria:
   - [ ]
+- Te testen:
+- Slice (`src/features/…`):
 
 ## Schermen
 
-| Scherm | Route | Doel | Naartoe vanaf |
+| Scherm | Route | Doel | Vanaf |
 | --- | --- | --- | --- |
 | | | | |
 
@@ -54,20 +51,9 @@ _
 
 _
 
-## Slices
+## Update — alleen afwijkingen
 
-| Capability | `src/features/…` | Notes |
-| --- | --- | --- |
-| | | |
-
-## Te testen
-
-Per feature: wat Vitest moet dekken.
-
-## Update (afwijkingen t.o.v. standaard)
-
-Standaard: NL-prompt **Vernieuwen**, versie zichtbaar, check op foreground.  
-Afwijkingen: _geen / …_
+_
 
 ## Open
 

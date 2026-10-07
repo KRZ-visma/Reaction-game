@@ -1,14 +1,11 @@
 # Agent instructions — Reaction-game PWA
 
-Canon voor coding agents. Product: [`docs/app-spec.md`](docs/app-spec.md).
-Zonder features in die spec: alleen scaffold/infra; geen zelfbedachte gameplay.
-
-Details: [`.cursor/rules/`](.cursor/rules/).
+Canon. Product: [`docs/app-spec.md`](docs/app-spec.md). Spec leeg → alleen scaffold/infra.
+Uitwerking: [`.cursor/rules/`](.cursor/rules/).
 
 ## Doel
 
-TypeScript **PWA** op **GitHub Pages**, met betrouwbare **client-updates**
-(ook op telefoon na installatie).
+TypeScript PWA op GitHub Pages met betrouwbare client-updates (ook na installatie op telefoon).
 
 ## Stack (vast)
 
@@ -18,85 +15,47 @@ TypeScript **PWA** op **GitHub Pages**, met betrouwbare **client-updates**
 | Taal | TypeScript strict |
 | UI | Vanilla TS + CSS (tenzij spec anders) |
 | PWA | `vite-plugin-pwa` (Workbox) |
-| Tests | Vitest (`*.test.ts` / `*.spec.ts`) |
+| Tests | Vitest |
 | Deploy | GitHub Actions → Pages (`dist`) |
 | Packages | npm + lockfile |
 
-Stack wijzigen alleen op expliciete instructie.
+Wijzigen alleen op expliciete instructie.
 
 ## Architectuur
 
-Succes = **makkelijk refactorbaar**. Wendbaar > premature abstractie.
-
-- Modules op **functie/capability**, niet op technische lagen.
-- **Screaming architecture** + **vertical slices** + **SOLID** (richtlijn, geen ceremonie).
-- Dun `shared/`; feature-logica hoort in de slice.
-- Cross-feature alleen via `index.ts` (liever: geen koppeling).
-
-```text
-src/
-  main.ts                 # composition root
-  app/                    # shell
-  features/<feature>/     # ui/ + model/ + data?/ + index.ts + tests
-  shared/                 # minimaal
-  styles/
-```
-
+Succes = makkelijk refactorbaar.
+Capability-slices (`src/features/<name>/`), screaming names, SOLID, dun `shared/`.
 Zie `.cursor/rules/architecture.mdc`.
 
-## Repo
+## PWA, tests, Pages
 
-- `base: '/Reaction-game/'` (Pages project-site).
-- Assets: `public/`. Geen secrets in de client.
-- Features importeren alleen elkaars publieke API.
-
-## PWA & updates
-
-Manifest + SW + installeerbaar + offline shell. Unieke build-versie zichtbaar in UI.
-Update via prompt (**Vernieuwen**), niet stille `autoUpdate` als default.
-Op foreground opnieuw `registration.update()`.
-Zie `.cursor/rules/pwa-versioning.mdc`.
-
-## Testen
-
-Elke behavior change → tests bijwerken. **`npm test` lokaal groen** vóór done.
-CI: `npm ci` → `npm test` → typecheck → `npm run build` → pas dan deploy.
-Geen E2E tenzij de spec dat eist. Zie `.cursor/rules/testing.mdc`.
-
-## Pages
-
-`.github/workflows/deploy-pages.yml`: push `main` + `workflow_dispatch`.
-Tests rood = geen deploy. Zie `.cursor/rules/github-pages.mdc`.
+- Updates: prompt **Vernieuwen**; versie zichtbaar. → `pwa-versioning.mdc`
+- Tests: bij elke change; `npm test` lokaal groen vóór done. → `testing.mdc`
+- Deploy: `deploy-pages.yml`; tests rood = geen deploy; `base: '/Reaction-game/'`. → `github-pages.mdc`
+- Scope/scaffold: → `scaffold.mdc`
 
 ## Werkwijze
 
-1. Lees `AGENTS.md`, rules, `docs/app-spec.md`.
-2. Spec leeg → scaffold (Vite/TS/PWA/tests/Pages/update-slice). Geen spel verzinnen.
-3. Spec gevuld → spec eerst bijwerken, daarna **één vertical slice** per keer.
+1. Spec leeg → scaffold. Geen gameplay verzinnen.
+2. Spec gevuld → eerst spec, dan één vertical slice tegelijk.
 
 ## Definition of done
 
-- [ ] Vertical slice onder `src/features/<name>/` (of bewuste `app/`/`shared/`)
-- [ ] Geen lagen-dump (`components/`/`services/`/`utils/` als primaire structuur)
-- [ ] Tests bijgewerkt; `npm test` groen (lokaal uitgevoerd)
+- [ ] Slice onder `src/features/<name>/` (of bewust `app/`/`shared/`)
+- [ ] Geen lagen-dump als primaire structuur
+- [ ] Tests bijgewerkt; `npm test` lokaal groen
 - [ ] Typecheck + `npm run build` groen
-- [ ] Manifest/SW in `dist`; versie zichtbaar; updateprompt ok
-- [ ] CI draait tests vóór deploy; `base`-paden kloppen
+- [ ] Manifest/SW in `dist`; versie + updateprompt ok
+- [ ] CI test vóór deploy; `base`-paden kloppen
 - [ ] Blijft makkelijk refactorbaar
 
 ## Verboden
 
-- Native wrappers/backends/frameworks zonder vraag of spec
-- SW uitzetten in prod; stille guideline-breaks; bevestigingspraat
-- Feature-logica in `shared/` zonder tweede echte consumer
-- Extra markdown buiten `README.md`, `AGENTS.md`, `docs/*`, rules — tenzij gevraagd
+Native wrappers/backends/extra frameworks zonder vraag of spec.
+SW uitzetten in prod. Feature-logica in `shared/` zonder tweede consumer.
+Richtlijnen stil afzwakken. Extra markdown buiten README/AGENTS/docs/rules zonder vraag.
 
 ## Communicatie & taal
 
-Kort, duidelijk, krachtig. Geen lof of vulpraat. Verzoeken toetsen aan deze
-richtlijnen; bij conflict: **verdedigen**, niet stil aanpassen. Override alleen
-expliciet. Zie `.cursor/rules/communication.mdc`.
-
-- Code/commits: Engels
-- UI-copy: Nederlands (tenzij spec anders)
-- Chat met gebruiker: Nederlands, in deze stijl
+Snijtest + geen lof + richtlijnen verdedigen: `.cursor/rules/communication.mdc`.
+Code/commits: Engels. UI-copy + chat: Nederlands.

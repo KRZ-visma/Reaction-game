@@ -5,29 +5,11 @@ alwaysApply: true
 
 # PWA versioning & updates
 
-Na deploy moeten geïnstalleerde clients (incl. telefoon) de nieuwe build kunnen
-detecteren en toepassen — zonder “sitegegevens wissen”.
+Geïnstalleerde clients moeten na deploy de nieuwe build kunnen toepassen zonder sitegegevens te wissen.
 
-## Build-identiteit
-
-Unieke versie per productiebuild (`package.json` + korte git SHA of timestamp).
-Injecteren en discreet tonen in de UI.
-
-## Service worker
-
-- `vite-plugin-pwa`, precache hashed assets.
-- Default: `registerType: 'prompt'` (geen stille `autoUpdate` tenzij expliciet gevraagd).
-- Op **Vernieuwen**: skip waiting → reload clients.
-- Bij `visibilitychange` → `visible`: `registration.update()`.
-- SW-scope volgt Vite `base` (`/Reaction-game/`).
-
-## UX (NL)
-
-- Titel: “Nieuwe versie beschikbaar”
-- Body: “Er is een update. Tik op Vernieuwen om te laden.”
-- Primair: “Vernieuwen” · Optioneel: “Later”
-
-## Check
-
-Deploy A → installeren → deploy B → foreground → prompt → reload op B-versie.
-Offline shell na eerste bezoek blijft werken.
+- Unieke build-versie (`package.json` + SHA of timestamp), zichtbaar in UI.
+- `vite-plugin-pwa`, precache hashed assets; default `registerType: 'prompt'` (geen stille `autoUpdate` tenzij gevraagd).
+- **Vernieuwen** → skip waiting → reload. Foreground (`visibilitychange`) → `registration.update()`.
+- SW-scope = Vite `base` (`/Reaction-game/`).
+- UX: “Nieuwe versie beschikbaar” / “Er is een update. Tik op Vernieuwen om te laden.” / **Vernieuwen** · Later.
+- Check: A installeren → B deployen → foreground → prompt → reload op B; offline shell blijft.

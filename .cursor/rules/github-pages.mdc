@@ -1,26 +1,14 @@
 ---
-description: GitHub Pages deploy via Actions with test gate
+description: GitHub Pages via Actions with test gate
 alwaysApply: true
 ---
 
 # GitHub Pages
 
-- Static: Vite `dist/`. Source: **GitHub Actions** (niet branch/docs).
-- URL: `https://<owner>.github.io/Reaction-game/`
-- Vite: `base: '/Reaction-game/'`
-
-## Workflow
-
-`.github/workflows/deploy-pages.yml`
-
-- Triggers: push `main`, `workflow_dispatch`
-- Perms: `contents: read`, `pages: write`, `id-token: write`
-- Concurrency groep tegen overlap
-- Stappen: `npm ci` → `npm test` → typecheck → `npm run build` → artifact → deploy
-- Rode tests/typecheck/build = geen deploy
-
-## Routing
-
-Prefer hash of single-route. Path-routes → Pages-fallback (`404.html` ≈ `index.html`).
-
-Na wijzigingen: `base`, asset-URLs en SW-scope controleren.
+- `dist/` via **GitHub Actions** (niet branch/docs).
+- URL `https://<owner>.github.io/Reaction-game/` → Vite `base: '/Reaction-game/'`.
+- Workflow `.github/workflows/deploy-pages.yml`: push `main` + `workflow_dispatch`.
+- Perms: `contents: read`, `pages: write`, `id-token: write`. Concurrency tegen overlap.
+- `npm ci` → `npm test` → typecheck → `npm run build` → artifact → deploy. Rood = geen deploy.
+- Prefer hash/single-route; path-routes → `404.html` ≈ `index.html`.
+- Na wijziging: `base`, asset-URLs, SW-scope checken.

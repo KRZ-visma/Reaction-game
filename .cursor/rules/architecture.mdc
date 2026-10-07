@@ -1,5 +1,5 @@
 ---
-description: Modular vertical slices; optimize for easy refactoring
+description: Capability slices; optimize for easy refactoring
 alwaysApply: true
 ---
 
@@ -7,32 +7,14 @@ alwaysApply: true
 
 **Goed** = feature verplaatsen/herschrijven/verwijderen zonder kettingreactie.
 
-## Regels
-
-1. Primair: **modulaire**, functioneel gescheiden modules.
-2. Top-level op **capability**, niet op `components/`/`services/`/`utils/`.
-3. **Screaming architecture** — mappen noemen het domein.
-4. **Vertical slices** — UI + model + data? + tests per feature; één slice tegelijk.
-5. **SOLID** voor grenzen; geen ceremonie die refactoren duurder maakt.
-6. Dun `shared/`; geen feature-lekkage.
-
-## Layout
+1. Top-level op capability, niet `components/`/`services/`/`utils/`.
+2. Screaming names + vertical slices (ui + model + data? + tests); één slice tegelijk.
+3. SOLID voor grenzen; geen ceremonie die refactoren duurder maakt.
+4. Dun `shared/`. Cross-feature alleen via `index.ts` (liever geen koppeling).
+5. `model/` zo puur mogelijk. `main.ts` = composition root.
 
 ```text
-src/main.ts
-src/app/
-src/features/<feature>/{ui,model,data?,index.ts,*.test.ts}
-src/shared/
-src/styles/
+src/{main.ts,app/,features/<feature>/{ui,model,data?,index.ts,*.test.ts},shared/,styles/}
 ```
 
-## Dependencies
-
-- `main`/`app` componeren features.
-- Features → `shared` + eigen internals.
-- Geen deep-imports in andere features; alleen `index.ts`.
-- `model/` zo puur mogelijk.
-
-## Smells
-
-God-modules, shared managers, premature frameworks, lagen-dumps, shell-only tests voor pure logica.
+**Smells:** god-modules, shared managers, premature frameworks, lagen-dumps.

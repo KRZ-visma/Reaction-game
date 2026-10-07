@@ -5,11 +5,9 @@ alwaysApply: true
 
 # Testing
 
-- Runner: **Vitest**. Bestanden: `src/**/*.test.ts` of `*.spec.ts`.
-- Script `npm test` = non-watch, CI-vriendelijk.
-- Unit tests voor domeinlogica. DOM-tests alleen als nodig. Geen E2E zonder spec.
+- Vitest; `src/**/*.{test,spec}.ts`; `npm test` non-watch.
+- Unit voor domeinlogica; DOM alleen als nodig; E2E alleen met spec.
 - Elke behavior change → tests bijwerken.
-- **Done ≠ gedaan** tot `npm test` lokaal groen is. Rood fixen vóór commit/PR.
-- Scaffold: minstens één smoke test + CI-wire vanaf dag één.
-- CI/deploy: `npm test` vóór build/deploy. Failing tests → failing job.
-- Verboden: tests uitzetten/wissen om groen te scoren.
+- Done pas na **lokaal** groen `npm test`. Rood fixen vóór commit/PR.
+- Scaffold: ≥1 smoke test + CI vanaf dag één.
+- CI: `npm test` vóór build/deploy. Tests uitzetten/wissen om groen te scoren: verboden.
