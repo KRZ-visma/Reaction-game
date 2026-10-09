@@ -66,8 +66,10 @@ function palmCenter(landmarks: readonly LandmarkPoint[]): { x: number; y: number
     return null;
   }
 
+  // Video and canvas both use scaleX(-1), so the bitmap x already
+  // sits on the hand. Flipping x again sends the catcher the other way.
   return {
-    x: 1 - sumX / count,
+    x: sumX / count,
     y: sumY / count,
   };
 }

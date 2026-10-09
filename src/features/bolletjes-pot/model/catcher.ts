@@ -14,30 +14,20 @@ export type FrameSize = {
 };
 
 /** Circle radius as a fraction of the shorter frame side. */
-export const CATCHER_CIRCLE_RADIUS = 0.06;
-
-/** Square edge as a fraction of the shorter frame side. */
-export const CATCHER_SQUARE_SIZE = 0.14;
-
-/** Fraction of the circle radius that sinks into the top of the square. */
-export const CATCHER_SINK = 0.42;
+export const CATCHER_CIRCLE_RADIUS = 0.045;
 
 export type Catcher = {
   side: HandSide;
-  /** Palm anchor. The square is centered here; the circle sits on top. */
+  /** Palm center, normalized 0–1. The circle is centered here. */
   x: number;
   y: number;
   circleRadius: number;
-  squareSize: number;
 };
 
 export type CatcherLayout = {
   circleX: number;
   circleY: number;
   circleRadius: number;
-  squareLeft: number;
-  squareTop: number;
-  squareSize: number;
 };
 
 export function catcherFromHand(hand: DetectedHand): Catcher {
@@ -46,7 +36,6 @@ export function catcherFromHand(hand: DetectedHand): Catcher {
     x: hand.x,
     y: hand.y,
     circleRadius: CATCHER_CIRCLE_RADIUS,
-    squareSize: CATCHER_SQUARE_SIZE,
   };
 }
 
@@ -60,77 +49,21 @@ function resolveFrame(frame: FrameSize): { width: number; height: number } {
 export function layoutCatcher(catcher: Catcher, frame: FrameSize): CatcherLayout {
   const { width, height } = resolveFrame(frame);
   const minDim = Math.min(width, height);
-  const squareSize = catcher.squareSize * minDim;
-  const circleRadius = catcher.circleRadius * minDim;
-  const anchorX = catcher.x * width;
-  const anchorY = catcher.y * height;
-  const squareLeft = anchorX - squareSize / 2;
-  const squareTop = anchorY - squareSize / 2;
-  const circleY = squareTop - circleRadius + circleRadius * CATCHER_SINK;
-
   return {
-    circleX: anchorX,
-    circleY,
-    circleRadius,
-    squareLeft,
-    squareTop,
-    squareSize,
+    circleX: catcher.x * width,
+    circleY: catcher.y * height,
+    circleRadius: catcher.circleRadius * minDim,
   };
-}
-
-function circleHitsCircle(
-  ax: number,
-  ay: number,
-  aRadius: number,
-  bx: number,
-  by: number,
-  bRadius: number,
-): boolean {
-  return Math.hypot(ax - bx, ay - by) <= aRadius + bRadius;
-}
-
-function circleHitsSquare(
-  centerX: number,
-  centerY: number,
-  radius: number,
-  left: number,
-  top: number,
-  size: number,
-): boolean {
-  const nearestX = Math.min(Math.max(centerX, left), left + size);
-  const nearestY = Math.min(Math.max(centerY, top), top + size);
-  return Math.hypot(centerX - nearestX, centerY - nearestY) <= radius;
 }
 
 export function catcherHitsDot(catcher: Catcher, dot: Dot, frame: FrameSize): boolean {
   const { width, height } = resolveFrame(frame);
   const layout = layoutCatcher(catcher, frame);
   const minDim = Math.min(width, height);
-  const dotX = dot.x * width;
-  const dotY = dot.y * height;
-  const dotRadius = dot.radius * minDim;
-
-  if (
-    circleHitsCircle(
-      layout.circleX,
-      layout.circleY,
-      layout.circleRadius,
-      dotX,
-      dotY,
-      dotRadius,
-    )
-  ) {
-    return true;
-  }
-
-  return circleHitsSquare(
-    dotX,
-    dotY,
-    dotRadius,
-    layout.squareLeft,
-    layout.squareTop,
-    layout.squareSize,
-  );
+  const dx = dot.x * width - layout.circleX;
+  const dy = dot.y * height - layout.circleY;
+  const reach = layout.circleRadius + dot.radius * minDim;
+  return Math.hypot(dx, dy) <= reach;
 }
 
 export function collectDotsWithCatchers(
