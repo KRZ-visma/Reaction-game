@@ -1,0 +1,186 @@
+.pot {
+  position: relative;
+  min-height: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.pot__stage {
+  position: absolute;
+  inset: 0;
+  background: #02080c;
+}
+
+.pot__video,
+.pot__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.pot__canvas {
+  pointer-events: none;
+}
+
+.pot__hud {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  align-content: space-between;
+  padding:
+    calc(1rem + var(--safe-top))
+    1rem
+    calc(1rem + var(--safe-bottom));
+  pointer-events: none;
+}
+
+.pot__hud > * {
+  pointer-events: auto;
+}
+
+.pot__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.pot__stat {
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  background: var(--panel);
+  border: 1px solid rgb(61 214 198 / 28%);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.pot__center {
+  justify-self: center;
+  text-align: center;
+  max-width: 22rem;
+}
+
+.pot__brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.4rem, 12vw, 4.2rem);
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  text-shadow: 0 10px 40px rgb(0 0 0 / 45%);
+}
+
+.pot__lead {
+  margin: 0.85rem 0 0;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.pot__status {
+  margin: 0.75rem 0 0;
+  min-height: 1.4em;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.pot__countdown {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 28vw, 9rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+  text-shadow: 0 0 40px rgb(61 214 198 / 35%);
+  animation: pot-pulse 0.9s ease-in-out infinite alternate;
+}
+
+.pot__controls {
+  display: grid;
+  gap: 0.75rem;
+  width: min(100%, 22rem);
+  justify-self: center;
+}
+
+.pot__durations {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.pot__duration,
+.pot__primary,
+.pot__ghost {
+  min-height: 3rem;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+}
+
+.pot__duration {
+  background: rgb(255 255 255 / 6%);
+  color: var(--text);
+  border: 1px solid rgb(155 176 184 / 35%);
+}
+
+.pot__duration[aria-pressed='true'] {
+  background: rgb(61 214 198 / 18%);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pot__primary {
+  background: linear-gradient(135deg, var(--accent), #2bb8a8);
+  color: #042019;
+  box-shadow: 0 12px 30px rgb(61 214 198 / 22%);
+}
+
+.pot__ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgb(155 176 184 / 45%);
+}
+
+.pot__scoreboard {
+  justify-self: center;
+  text-align: center;
+  padding: 1.2rem 1.4rem;
+  background: var(--panel);
+  border: 1px solid rgb(61 214 198 / 30%);
+  backdrop-filter: blur(12px);
+}
+
+.pot__scoreboard h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+}
+
+.pot__final-score {
+  margin: 0.45rem 0 1rem;
+  font-size: 2.4rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--accent);
+}
+
+@keyframes pot-pulse {
+  from {
+    transform: scale(0.96);
+    opacity: 0.85;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pot__countdown {
+    animation: none;
+  }
+}
