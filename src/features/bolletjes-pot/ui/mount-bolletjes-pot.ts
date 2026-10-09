@@ -43,7 +43,7 @@ export function mountBolletjesPot(host: HTMLElement): { destroy: () => void } {
       </div>
       <div class="pot__center">
         <p class="pot__brand">Reaction-game</p>
-        <p class="pot__lead">Elke hand wordt een rondje op een vierkantje. Vang daarmee de bolletjes.</p>
+        <p class="pot__lead">Elke hand wordt een rondje. Vang daarmee de bolletjes.</p>
         <p class="pot__status" role="status" aria-live="polite"></p>
         <p class="pot__countdown" hidden aria-live="assertive"></p>
         <div class="pot__scoreboard" hidden>

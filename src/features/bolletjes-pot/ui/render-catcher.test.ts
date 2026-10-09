@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { catcherFromHand } from '../model/catcher';
+import { CATCHER_CIRCLE_RADIUS, catcherFromHand } from '../model/catcher';
 import { drawCatchers } from './render-catcher';
 
 type DrawCall = { op: 'rect' | 'arc'; args: number[] };
@@ -24,21 +24,17 @@ function fakeContext(): { ctx: CanvasRenderingContext2D; calls: DrawCall[] } {
 }
 
 describe('drawCatchers', () => {
-  it('draws the square first and the circle on top of it', () => {
+  it('draws only a circle centered on the hand', () => {
     const { ctx, calls } = fakeContext();
-    const catcher = catcherFromHand({ side: 'left', x: 0.5, y: 0.5 });
-    drawCatchers(ctx, [catcher], { width: 1000, height: 1000 });
+    drawCatchers(ctx, [catcherFromHand({ side: 'left', x: 0.5, y: 0.4 })], {
+      width: 1000,
+      height: 1000,
+    });
 
-    const rect = calls.find((call) => call.op === 'rect');
+    expect(calls.some((call) => call.op === 'rect')).toBe(false);
     const arc = calls.find((call) => call.op === 'arc');
-    expect(rect).toBeDefined();
-    expect(arc).toBeDefined();
-    expect(calls.findIndex((call) => call.op === 'rect')).toBeLessThan(
-      calls.findIndex((call) => call.op === 'arc'),
-    );
-
-    const squareTop = rect?.args[1] ?? 0;
-    const circleY = arc?.args[1] ?? 0;
-    expect(circleY).toBeLessThan(squareTop);
+    expect(arc?.args[0]).toBeCloseTo(500);
+    expect(arc?.args[1]).toBeCloseTo(400);
+    expect(arc?.args[2]).toBeCloseTo(CATCHER_CIRCLE_RADIUS * 1000);
   });
 });

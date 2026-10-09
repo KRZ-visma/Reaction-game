@@ -1,7 +1,5 @@
 import { layoutCatcher, type Catcher, type FrameSize } from '../model/catcher';
 
-const SQUARE_FILL = 'rgb(4 32 28 / 0.82)';
-const SQUARE_STROKE = '#d7fff8';
 const CIRCLE_FILL = '#3dd6c6';
 const CIRCLE_STROKE = '#f4fffc';
 const CIRCLE_CORE = '#04201c';
@@ -18,14 +16,7 @@ export function drawCatchers(
 
   for (const catcher of catchers) {
     const layout = layoutCatcher(catcher, frame);
-    ctx.lineWidth = Math.max(2, minDim * 0.006);
-
-    ctx.beginPath();
-    ctx.fillStyle = SQUARE_FILL;
-    ctx.strokeStyle = SQUARE_STROKE;
-    ctx.rect(layout.squareLeft, layout.squareTop, layout.squareSize, layout.squareSize);
-    ctx.fill();
-    ctx.stroke();
+    ctx.lineWidth = Math.max(2, minDim * 0.005);
 
     ctx.beginPath();
     ctx.fillStyle = CIRCLE_FILL;
