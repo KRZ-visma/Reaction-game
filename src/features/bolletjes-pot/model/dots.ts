@@ -79,22 +79,3 @@ export function spawnDots(options: SpawnDotsOptions): Dot[] {
 
   return spawned;
 }
-
-export function collectDotsAtPoints(
-  dots: readonly Dot[],
-  points: readonly Point[],
-): { remaining: Dot[]; collectedIds: number[] } {
-  const collectedIds: number[] = [];
-  const remaining: Dot[] = [];
-
-  for (const dot of dots) {
-    const hit = points.some((point) => distance(point, dot) <= dot.radius * 1.35);
-    if (hit) {
-      collectedIds.push(dot.id);
-    } else {
-      remaining.push(dot);
-    }
-  }
-
-  return { remaining, collectedIds };
-}
