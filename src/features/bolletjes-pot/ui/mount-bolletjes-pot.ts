@@ -1,4 +1,4 @@
-import { startCamera, type CameraSession } from '../data/camera';
+import { cameraFailureMessage, startCamera, type CameraSession } from '../data/camera';
 import { createHandDetector, type HandDetector } from '../data/hand-detector';
 import { createGameEngine, type GameState } from '../model/game';
 import {
@@ -238,17 +238,10 @@ export function mountBolletjesPot(host: HTMLElement): { destroy: () => void } {
       ensureLoop();
     } catch (error) {
       teardownMedia();
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Camera of detectie kon niet starten.';
       render(
         engine.dispatch({
           type: 'cameraError',
-          message:
-            message.includes('Permission') || message.includes('NotAllowed')
-              ? 'Camera-toegang geweigerd. Sta de camera toe en probeer opnieuw.'
-              : message,
+          message: cameraFailureMessage(error),
         }),
       );
     }
