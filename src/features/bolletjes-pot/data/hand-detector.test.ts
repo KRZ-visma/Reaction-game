@@ -6,15 +6,15 @@ function landmarksAt(x: number, y: number): { x: number; y: number }[] {
 }
 
 describe('handsFromDetection', () => {
-  it('mirrors the palm and keeps left and right hands', () => {
+  it('keeps the camera x so the catcher follows the mirrored preview', () => {
     const hands = handsFromDetection(
       [landmarksAt(0.2, 0.4), landmarksAt(0.75, 0.6)],
       [[{ categoryName: 'Left' }], [{ categoryName: 'Right' }]],
     );
 
     expect(hands).toEqual([
-      { side: 'left', x: 0.8, y: 0.4 },
-      { side: 'right', x: 0.25, y: 0.6 },
+      { side: 'left', x: 0.2, y: 0.4 },
+      { side: 'right', x: 0.75, y: 0.6 },
     ]);
   });
 
