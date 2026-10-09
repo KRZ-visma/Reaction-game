@@ -1,4 +1,11 @@
-import { collectDotsAtPoints, spawnDots, type Dot, type Point } from './dots';
+import {
+  catcherFromHand,
+  collectDotsWithCatchers,
+  type Catcher,
+  type DetectedHand,
+  type FrameSize,
+} from './catcher';
+import { spawnDots, type Dot } from './dots';
 import {
   type GamePhase,
   type RoundDurationSeconds,
@@ -12,6 +19,7 @@ export type GameState = {
   countdownValue: number | null;
   score: number;
   dots: Dot[];
+  catchers: Catcher[];
   statusMessage: string;
 };
 
@@ -20,10 +28,10 @@ export type GameEvent =
   | { type: 'start' }
   | { type: 'cameraReady' }
   | { type: 'cameraError'; message: string }
-  | { type: 'personDetected' }
+  | { type: 'handsDetected' }
   | { type: 'countdownTick' }
   | { type: 'tick'; deltaSeconds: number }
-  | { type: 'hands'; points: Point[] }
+  | { type: 'hands'; hands: DetectedHand[]; frame: FrameSize }
   | { type: 'reset' };
 
 const MAX_DOTS = 7;
@@ -40,6 +48,7 @@ export function createInitialState(
     countdownValue: null,
     score: 0,
     dots: [],
+    catchers: [],
     statusMessage: 'Kies een speelduur en start.',
   };
 }
@@ -77,6 +86,7 @@ export function createGameEngine(
     countdownValue: null,
     score: 0,
     dots: [],
+    catchers: [],
   });
 
   const beginPlaying = (): GameState => {
@@ -94,7 +104,7 @@ export function createGameEngine(
       remainingSeconds: state.durationSeconds,
       score: 0,
       dots,
-      statusMessage: 'Pak de bolletjes met je handen!',
+      statusMessage: 'Vang de bolletjes met het rondje.',
     });
   };
 
@@ -125,7 +135,7 @@ export function createGameEngine(
         }
         return setState({
           phase: 'detecting',
-          statusMessage: 'Ga voor de camera…',
+          statusMessage: 'Laat je handen zien…',
         });
       }
       case 'cameraError': {
@@ -138,7 +148,7 @@ export function createGameEngine(
           statusMessage: event.message,
         });
       }
-      case 'personDetected': {
+      case 'handsDetected': {
         if (state.phase !== 'detecting') {
           return state;
         }
@@ -186,6 +196,7 @@ export function createGameEngine(
             phase: 'finished',
             remainingSeconds: 0,
             dots: [],
+            catchers: [],
             statusMessage: `Klaar! Score: ${state.score}`,
           });
         }
@@ -193,14 +204,20 @@ export function createGameEngine(
         return setState({ remainingSeconds, dots });
       }
       case 'hands': {
-        if (state.phase !== 'playing' || event.points.length === 0) {
+        if (state.phase !== 'playing' && state.phase !== 'countdown') {
           return state;
         }
-        const { remaining, collectedIds } = collectDotsAtPoints(state.dots, event.points);
-        if (collectedIds.length === 0) {
-          return state;
+        const catchers = event.hands.map(catcherFromHand);
+        if (state.phase !== 'playing') {
+          return setState({ catchers });
         }
+        const { remaining, collectedIds } = collectDotsWithCatchers(
+          state.dots,
+          catchers,
+          event.frame,
+        );
         return setState({
+          catchers,
           dots: remaining,
           score: state.score + collectedIds.length,
         });

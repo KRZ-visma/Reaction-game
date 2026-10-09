@@ -25,7 +25,7 @@ describe('bolletjes-pot game engine', () => {
     engine.dispatch({ type: 'cameraReady' });
     expect(engine.getState().phase).toBe('detecting');
 
-    engine.dispatch({ type: 'personDetected' });
+    engine.dispatch({ type: 'handsDetected' });
     expect(engine.getState().phase).toBe('countdown');
     expect(engine.getState().countdownValue).toBe(3);
 
@@ -44,16 +44,36 @@ describe('bolletjes-pot game engine', () => {
     const engine = createGameEngine(60, () => 0.5);
     engine.dispatch({ type: 'start' });
     engine.dispatch({ type: 'cameraReady' });
-    engine.dispatch({ type: 'personDetected' });
+    engine.dispatch({ type: 'handsDetected' });
     engine.dispatch({ type: 'countdownTick' });
     engine.dispatch({ type: 'countdownTick' });
     engine.dispatch({ type: 'countdownTick' });
 
     const [dot] = engine.getState().dots;
     expect(dot).toBeDefined();
-    engine.dispatch({ type: 'hands', points: [{ x: dot.x, y: dot.y }] });
+    engine.dispatch({
+      type: 'hands',
+      hands: [{ side: 'left', x: dot.x, y: dot.y }],
+      frame: { width: 1000, height: 1000 },
+    });
     expect(engine.getState().score).toBeGreaterThanOrEqual(1);
+    expect(engine.getState().catchers).toHaveLength(1);
     expect(engine.getState().dots.some((item) => item.id === dot.id)).toBe(false);
+  });
+
+  it('shows catchers during countdown without scoring', () => {
+    const engine = createGameEngine();
+    engine.dispatch({ type: 'start' });
+    engine.dispatch({ type: 'cameraReady' });
+    engine.dispatch({ type: 'handsDetected' });
+    engine.dispatch({
+      type: 'hands',
+      hands: [{ side: 'right', x: 0.3, y: 0.4 }],
+      frame: { width: 800, height: 600 },
+    });
+    expect(engine.getState().phase).toBe('countdown');
+    expect(engine.getState().catchers).toHaveLength(1);
+    expect(engine.getState().score).toBe(0);
   });
 
   it('returns to setup on reset', () => {

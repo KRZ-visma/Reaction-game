@@ -1,5 +1,5 @@
-import { startCamera, type CameraSession } from '../data/camera';
-import { createPoseDetector, type PoseDetector } from '../data/pose-detector';
+import { cameraFailureMessage, startCamera, type CameraSession } from '../data/camera';
+import { createHandDetector, type HandDetector } from '../data/hand-detector';
 import { createGameEngine, type GameState } from '../model/game';
 import {
   ROUND_DURATIONS,
@@ -7,12 +7,13 @@ import {
   formatDurationLabel,
   type RoundDurationSeconds,
 } from '../model/phases';
+import { paintCatchers } from './render-catcher';
 import { drawDots, syncCanvasSize } from './render-dots';
 import './bolletjes-pot.css';
 
 type Runtime = {
   camera: CameraSession | null;
-  detector: PoseDetector | null;
+  detector: HandDetector | null;
   rafId: number | null;
   countdownTimer: number | null;
   lastFrameMs: number | null;
@@ -42,7 +43,7 @@ export function mountBolletjesPot(host: HTMLElement): { destroy: () => void } {
       </div>
       <div class="pot__center">
         <p class="pot__brand">Reaction-game</p>
-        <p class="pot__lead">Verzamel zo veel mogelijk bolletjes in één pot.</p>
+        <p class="pot__lead">Elke hand wordt een rondje op een vierkantje. Vang daarmee de bolletjes.</p>
         <p class="pot__status" role="status" aria-live="polite"></p>
         <p class="pot__countdown" hidden aria-live="assertive"></p>
         <div class="pot__scoreboard" hidden>
@@ -145,7 +146,7 @@ export function mountBolletjesPot(host: HTMLElement): { destroy: () => void } {
       );
     }
 
-    if (state.phase !== 'playing') {
+    if (state.phase !== 'playing' && state.phase !== 'countdown') {
       const ctx = canvas.getContext('2d');
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
     }
@@ -177,31 +178,45 @@ export function mountBolletjesPot(host: HTMLElement): { destroy: () => void } {
       syncCanvasSize(canvas, video.videoWidth || canvas.clientWidth, video.videoHeight || canvas.clientHeight);
       const sample = runtime.detector.detect(video, nowMs);
 
-      if (state.phase === 'detecting' && sample.personPresent) {
-        const next = engine.dispatch({ type: 'personDetected' });
+      if (state.phase === 'detecting' && sample.handsPresent) {
+        const next = engine.dispatch({ type: 'handsDetected' });
         render(next);
         startCountdown();
       }
 
-      if (state.phase === 'playing') {
+      const phase = engine.getState().phase;
+      if (phase === 'playing') {
         if (runtime.lastFrameMs !== null) {
           const deltaSeconds = Math.min(0.1, (nowMs - runtime.lastFrameMs) / 1000);
           engine.dispatch({ type: 'tick', deltaSeconds });
         }
         runtime.lastFrameMs = nowMs;
-        if (sample.handPoints.length > 0) {
-          engine.dispatch({ type: 'hands', points: sample.handPoints });
-        }
-        const playingState = engine.getState();
-        drawDots(canvas, playingState.dots, nowMs);
-        render(playingState);
-        if (playingState.phase === 'finished') {
-          teardownMedia();
-          runtime.rafId = null;
-          return;
-        }
       } else {
         runtime.lastFrameMs = nowMs;
+      }
+
+      const live = engine.getState();
+      if (live.phase === 'countdown' || live.phase === 'playing') {
+        engine.dispatch({
+          type: 'hands',
+          hands: sample.hands,
+          frame: { width: canvas.width, height: canvas.height },
+        });
+      }
+
+      const painted = engine.getState();
+      if (painted.phase === 'countdown' || painted.phase === 'playing') {
+        drawDots(canvas, painted.phase === 'playing' ? painted.dots : [], nowMs);
+        paintCatchers(canvas, painted.catchers, {
+          width: canvas.width,
+          height: canvas.height,
+        });
+      }
+      render(painted);
+      if (painted.phase === 'finished') {
+        teardownMedia();
+        runtime.rafId = null;
+        return;
       }
     }
 
@@ -218,22 +233,15 @@ export function mountBolletjesPot(host: HTMLElement): { destroy: () => void } {
     render(engine.dispatch({ type: 'start' }));
     try {
       runtime.camera = await startCamera(video);
-      runtime.detector = await createPoseDetector();
+      runtime.detector = await createHandDetector();
       render(engine.dispatch({ type: 'cameraReady' }));
       ensureLoop();
     } catch (error) {
       teardownMedia();
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Camera of detectie kon niet starten.';
       render(
         engine.dispatch({
           type: 'cameraError',
-          message:
-            message.includes('Permission') || message.includes('NotAllowed')
-              ? 'Camera-toegang geweigerd. Sta de camera toe en probeer opnieuw.'
-              : message,
+          message: cameraFailureMessage(error),
         }),
       );
     }
