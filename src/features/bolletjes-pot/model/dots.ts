@@ -21,7 +21,7 @@ export type SpawnDotsOptions = {
 };
 
 const DEFAULT_RADIUS = 0.055;
-const DEFAULT_MIN_DISTANCE = 0.14;
+const DEFAULT_MIN_DISTANCE = 0.25;
 const EDGE_PADDING = 0.08;
 
 function distance(a: Point, b: Point): number {

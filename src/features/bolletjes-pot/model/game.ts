@@ -34,9 +34,9 @@ export type GameEvent =
   | { type: 'hands'; hands: DetectedHand[]; frame: FrameSize }
   | { type: 'reset' };
 
-const MAX_DOTS = 7;
+const MAX_DOTS = 3;
 const SPAWN_EVERY_SECONDS = 0.85;
-const INITIAL_DOTS = 4;
+const INITIAL_DOTS = 2;
 
 export function createInitialState(
   durationSeconds: RoundDurationSeconds = 60,
@@ -179,7 +179,7 @@ export function createGameEngine(
         let dots = state.dots;
         while (spawnAccumulator >= SPAWN_EVERY_SECONDS && dots.length < MAX_DOTS) {
           spawnAccumulator -= SPAWN_EVERY_SECONDS;
-          const needed = Math.min(2, MAX_DOTS - dots.length);
+          const needed = Math.min(1, MAX_DOTS - dots.length);
           dots = [
             ...dots,
             ...spawnDots({
